@@ -17,9 +17,15 @@
     <!-- الشريط العلوي -->
     <header class="bg-slate-900 text-white py-4 shadow-lg fixed w-full z-50 top-0 opacity-95">
         <div class="container mx-auto px-6 flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-wider">
-                مِحور للتقنيات الحديثة <i class="fas fa-microchip text-blue-400 ml-2"></i>
-            </h1>
+          <a href="#home" class="flex items-center gap-3 transition transform hover:scale-105">
+    <!-- استبدل logo.png باسم ملف الشعار الخاص بك، وإذا وضعته في مجلد اكتب images/logo.png -->
+    <img src="logo.png" alt="شعار مِحور للتقنيات الحديثة" class="h-10 md:h-12 w-auto object-contain">
+    
+    <!-- سيختفي النص في شاشات الجوال الصغيرة جداً لتوفير مساحة للشعار -->
+    <h1 class="text-xl md:text-2xl font-bold tracking-wider hidden sm:block">
+        مِحور للتقنيات الحديثة
+    </h1>
+</a>
             <nav class="hidden md:flex space-x-6 space-x-reverse font-semibold">
                 <a href="#portfolio" class="hover:text-blue-400 transition">أعمالي والخدمات</a>
                 <a href="#payment" class="hover:text-blue-400 transition">تأكيد الدفع</a>
