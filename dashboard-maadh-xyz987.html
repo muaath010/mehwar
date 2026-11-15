@@ -3,161 +3,334 @@
 <head>
     <meta name="robots" content="noindex, nofollow">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوابة إدارة الأعمال | مِحور</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; }</style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; }
+        .tab-btn.active { background: #0f172a; color: #fff; }
+        .field { width: 100%; padding: .65rem .9rem; border: 1px solid #cbd5e1; border-radius: .75rem; background: #f8fafc; outline: none; transition: .15s; }
+        .field:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.15); background: #fff; }
+        .drop { border: 2px dashed #cbd5e1; border-radius: 1rem; transition: .15s; cursor: pointer; }
+        .drop:hover { border-color: #2563eb; background: #eff6ff; }
+    </style>
 </head>
-<body class="p-6">
-    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-        <h1 class="text-3xl font-bold mb-6 text-slate-800">بوابة الإدارة - أ. معاذ اليعقوبي</h1>
-        
-        <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-8">
-            <h2 class="font-bold text-blue-800 mb-4">إضافة عمل جديد للمنصة</h2>
-            <form id="add-project-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold mb-1">كلمة المرور للإدارة</label>
-                    <input type="password" id="admin-pass" required class="w-full p-2 border rounded" placeholder="أدخل كلمة المرور">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">عنوان العمل/الخدمة</label>
-                    <input type="text" id="p-title" required class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">السعر (ر.ع)</label>
-                    <input type="text" id="p-price" required class="w-full p-2 border rounded" placeholder="مثال: 50 أو حسب الاتفاق">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">نبذة عن العمل (تظهر في زر التفاصيل)</label>
-                    <textarea id="p-desc" required class="w-full p-2 border rounded h-24"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">صورة الغلاف (رئيسية)</label>
-                    <input type="file" id="p-cover" accept="image/*" required class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">ملفات مرفقة (مستندات، صور إضافية، مضغوط) - اختياري</label>
-                    <input type="file" id="p-files" multiple class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">روابط خارجية (مثل رابط يوتيوب أو ملف كبير جداً) - اختياري</label>
-                    <input type="text" id="p-links" class="w-full p-2 border rounded" placeholder="ضع الروابط هنا...">
-                </div>
-                
-                <button type="submit" id="add-btn" class="bg-slate-900 text-white font-bold py-2 px-6 rounded hover:bg-blue-700 w-full">رفع العمل للمنصة</button>
-            </form>
-        </div>
+<body class="min-h-screen text-slate-800">
 
-        <div>
-            <h2 class="font-bold text-red-800 mb-4 border-b pb-2">حذف الأعمال الحالية</h2>
-            <div id="projects-list" class="space-y-3">
-                <p class="text-gray-500 text-sm">جاري جلب الأعمال...</p>
-            </div>
-        </div>
+    <!-- ===== شاشة الدخول ===== -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 to-blue-900">
+        <form id="login-form" class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl mb-4"><i class="fas fa-shield-halved"></i></div>
+            <h1 class="text-2xl font-black mb-1">بوابة الإدارة</h1>
+            <p class="text-sm text-gray-500 mb-6">مِحور للتقنيات الحديثة</p>
+            <input type="password" id="login-pass" required class="field mb-4 text-center" placeholder="كلمة المرور">
+            <button id="login-btn" class="w-full bg-slate-900 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition">دخول</button>
+            <p id="login-error" class="text-red-600 text-sm mt-3 hidden"></p>
+        </form>
     </div>
+
+    <!-- ===== لوحة التحكم ===== -->
+    <div id="app" class="hidden">
+        <header class="bg-slate-900 text-white">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center"><i class="fas fa-gauge-high"></i></div>
+                    <div>
+                        <h1 class="font-black text-lg leading-tight">بوابة الإدارة</h1>
+                        <p class="text-xs text-slate-400">أ. معاذ اليعقوبي</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="text-sm text-slate-300 hover:text-white"><i class="fas fa-right-from-bracket ml-1"></i> خروج</button>
+            </div>
+        </header>
+
+        <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+            <!-- إحصائيات -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white rounded-2xl p-5 shadow-sm"><p class="text-xs text-gray-500">الأعمال المنشورة</p><p id="st-projects" class="text-3xl font-black text-slate-900">–</p></div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm"><p class="text-xs text-gray-500">طلبات بانتظار المراجعة</p><p id="st-pending" class="text-3xl font-black text-amber-500">–</p></div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm"><p class="text-xs text-gray-500">طلبات مقبولة</p><p id="st-approved" class="text-3xl font-black text-green-600">–</p></div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm"><p class="text-xs text-gray-500">إجمالي الطلبات</p><p id="st-orders" class="text-3xl font-black text-blue-600">–</p></div>
+            </div>
+
+            <!-- التبويبات -->
+            <div class="bg-white rounded-2xl shadow-sm p-1.5 flex gap-1 mb-6 overflow-x-auto">
+                <button class="tab-btn active flex-1 whitespace-nowrap py-2.5 px-4 rounded-xl font-bold text-sm transition" data-tab="orders"><i class="fas fa-receipt ml-1"></i> الطلبات <span id="badge-pending" class="hidden bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full mr-1"></span></button>
+                <button class="tab-btn flex-1 whitespace-nowrap py-2.5 px-4 rounded-xl font-bold text-sm transition" data-tab="add"><i class="fas fa-plus ml-1"></i> إضافة عمل</button>
+                <button class="tab-btn flex-1 whitespace-nowrap py-2.5 px-4 rounded-xl font-bold text-sm transition" data-tab="projects"><i class="fas fa-layer-group ml-1"></i> الأعمال</button>
+            </div>
+
+            <!-- تبويب الطلبات -->
+            <section id="tab-orders" class="tab">
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button class="filter-btn bg-slate-900 text-white text-sm font-bold px-4 py-1.5 rounded-full" data-filter="قيد المراجعة">بانتظار المراجعة</button>
+                    <button class="filter-btn bg-white text-slate-700 text-sm font-bold px-4 py-1.5 rounded-full" data-filter="مقبول">المقبولة</button>
+                    <button class="filter-btn bg-white text-slate-700 text-sm font-bold px-4 py-1.5 rounded-full" data-filter="مرفوض">المرفوضة</button>
+                    <button class="filter-btn bg-white text-slate-700 text-sm font-bold px-4 py-1.5 rounded-full" data-filter="">الكل</button>
+                    <button onclick="loadAll()" class="mr-auto text-sm text-blue-600 font-bold"><i class="fas fa-rotate ml-1"></i> تحديث</button>
+                </div>
+                <div id="orders-list" class="space-y-3"></div>
+            </section>
+
+            <!-- تبويب إضافة عمل -->
+            <section id="tab-add" class="tab hidden">
+                <form id="add-project-form" class="bg-white rounded-2xl shadow-sm p-6 md:p-8 grid md:grid-cols-2 gap-5">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold mb-1">عنوان العمل / الخدمة</label>
+                        <input type="text" id="p-title" required class="field">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">السعر (ر.ع)</label>
+                        <input type="text" id="p-price" required class="field" placeholder="مثال: 50 أو حسب الاتفاق">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">روابط خارجية <span class="text-gray-400 font-normal">(اختياري — تُقفل حتى الدفع)</span></label>
+                        <input type="text" id="p-links" class="field" dir="ltr" placeholder="https://... (افصل بمسافة)">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold mb-1">نبذة عن العمل <span class="text-gray-400 font-normal">(تظهر للجميع في زر التفاصيل)</span></label>
+                        <textarea id="p-desc" required class="field h-28"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">صورة الغلاف <span class="text-gray-400 font-normal">(اختياري — تُوضع صورة تقنية تلقائياً)</span></label>
+                        <label class="drop flex flex-col items-center justify-center h-44 overflow-hidden relative">
+                            <img id="cover-preview" class="absolute inset-0 w-full h-full object-cover hidden" alt="">
+                            <span id="cover-hint" class="text-gray-400 text-sm text-center"><i class="fas fa-image text-3xl mb-2 block"></i>اضغط لاختيار صورة</span>
+                            <input type="file" id="p-cover" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">الملفات المدفوعة <span class="text-gray-400 font-normal">(تُفتح للعميل بعد قبول الدفع)</span></label>
+                        <label class="drop flex flex-col items-center justify-center h-44 p-3">
+                            <span id="files-hint" class="text-gray-400 text-sm text-center"><i class="fas fa-file-zipper text-3xl mb-2 block"></i>اضغط لاختيار ملف أو أكثر</span>
+                            <input type="file" id="p-files" multiple class="hidden">
+                        </label>
+                    </div>
+                    <button type="submit" id="add-btn" class="md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition"><i class="fas fa-cloud-arrow-up ml-1"></i> رفع العمل للمنصة</button>
+                </form>
+            </section>
+
+            <!-- تبويب الأعمال -->
+            <section id="tab-projects" class="tab hidden">
+                <div id="projects-list" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- إشعار -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-xl text-sm font-bold hidden z-50"></div>
 
     <script>
         // *** ضع رابط الـ Web App هنا ***
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2guctcoM5yju4QHL-PB3qbvCn1aZqcv1GfiZXMCK7NytgIgAOtLXdRLYk4vXMgP4_kQ/exec';
 
-        // جلب الأعمال وعرضها للحذف
-        function loadProjects() {
-            const list = document.getElementById('projects-list');
-            fetch(SCRIPT_URL + '?t=' + Date.now())
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.error) throw new Error(data.error);
-                list.innerHTML = '';
-                if(!Array.isArray(data) || data.length === 0) { list.innerHTML = '<p class="text-sm">لا توجد أعمال حالياً.</p>'; return; }
-                const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                data.forEach(p => {
-                    list.innerHTML += `
-                        <div class="flex justify-between items-center bg-gray-50 p-3 border rounded">
-                            <span class="font-bold">${esc(p.title)} (${esc(p.price)} ر.ع)</span>
-                            <button onclick="deleteProject('${String(p.id).replace(/[^A-Za-z0-9-]/g,'')}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-800">حذف</button>
-                        </div>
-                    `;
-                });
-            })
-            .catch(err => {
-                list.innerHTML = '<p class="text-sm text-red-600">تعذر جلب الأعمال: ' + err.message + '</p>';
-            });
+        let PASS = '';
+        let orders = [], projects = [], orderFilter = 'قيد المراجعة';
+
+        const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+        function toast(msg, error) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = t.className.replace(/bg-\S+/, error ? 'bg-red-600' : 'bg-slate-900');
+            t.classList.remove('hidden');
+            clearTimeout(t._h); t._h = setTimeout(() => t.classList.add('hidden'), 3500);
         }
 
-        loadProjects();
+        async function api(payload) {
+            const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ ...payload, password: PASS }) });
+            const r = await res.json();
+            if (r.result !== 'success') throw new Error(r.message || 'خطأ غير معروف');
+            return r;
+        }
 
-        // تحويل الملف لمعالجة البيانات
-        const getBase64 = (file) => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve({
-                name: file.name,
-                mimeType: file.type,
-                base64: reader.result.split(',')[1]
-            });
-            reader.onerror = error => reject(error);
+        // ===== الدخول =====
+        document.getElementById('login-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn'), err = document.getElementById('login-error');
+            btn.disabled = true; btn.textContent = 'جاري التحقق...'; err.classList.add('hidden');
+            PASS = document.getElementById('login-pass').value;
+            try {
+                await api({ action: 'login' });
+                try { sessionStorage.setItem('mihwar_admin', PASS); } catch (_) {}
+                enterApp();
+            } catch (ex) {
+                err.textContent = ex.message; err.classList.remove('hidden');
+            }
+            btn.disabled = false; btn.textContent = 'دخول';
         });
 
-        // رفع عمل جديد
-        document.getElementById('add-project-form').addEventListener('submit', async (e) => {
+        function enterApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            loadAll();
+        }
+
+        function logout() {
+            try { sessionStorage.removeItem('mihwar_admin'); } catch (_) {}
+            location.reload();
+        }
+
+        (function autoLogin() {
+            let saved = '';
+            try { saved = sessionStorage.getItem('mihwar_admin') || ''; } catch (_) {}
+            if (saved) { PASS = saved; api({ action: 'login' }).then(enterApp).catch(() => {}); }
+        })();
+
+        // ===== التبويبات =====
+        document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(x => x.classList.toggle('active', x === b));
+            document.querySelectorAll('.tab').forEach(t => t.classList.toggle('hidden', t.id !== 'tab-' + b.dataset.tab));
+        }));
+
+        document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', () => {
+            orderFilter = b.dataset.filter;
+            document.querySelectorAll('.filter-btn').forEach(x => {
+                const on = x === b;
+                x.classList.toggle('bg-slate-900', on); x.classList.toggle('text-white', on);
+                x.classList.toggle('bg-white', !on); x.classList.toggle('text-slate-700', !on);
+            });
+            renderOrders();
+        }));
+
+        // ===== تحميل البيانات =====
+        async function loadAll() {
+            document.getElementById('orders-list').innerHTML = loadingHtml();
+            document.getElementById('projects-list').innerHTML = loadingHtml();
+            try {
+                const [o, p] = await Promise.all([api({ action: 'listOrders' }), api({ action: 'adminProjects' })]);
+                orders = o.orders || []; projects = p.projects || [];
+                renderStats(); renderOrders(); renderProjects();
+            } catch (ex) { toast('تعذر جلب البيانات: ' + ex.message, true); }
+        }
+
+        const loadingHtml = () => '<p class="col-span-full text-center text-gray-400 py-8"><i class="fas fa-circle-notch fa-spin"></i> جاري التحميل...</p>';
+
+        function renderStats() {
+            const pending = orders.filter(o => o.status === 'قيد المراجعة').length;
+            document.getElementById('st-projects').textContent = projects.length;
+            document.getElementById('st-pending').textContent = pending;
+            document.getElementById('st-approved').textContent = orders.filter(o => o.status === 'مقبول').length;
+            document.getElementById('st-orders').textContent = orders.length;
+            const badge = document.getElementById('badge-pending');
+            badge.textContent = pending; badge.classList.toggle('hidden', pending === 0);
+        }
+
+        const STATUS_CLS = { 'مقبول': 'bg-green-100 text-green-700', 'مرفوض': 'bg-red-100 text-red-700', 'قيد المراجعة': 'bg-amber-100 text-amber-700' };
+
+        function renderOrders() {
+            const list = document.getElementById('orders-list');
+            const items = orders.filter(o => !orderFilter || o.status === orderFilter);
+            if (!items.length) { list.innerHTML = '<div class="bg-white rounded-2xl p-10 text-center text-gray-400"><i class="fas fa-inbox text-3xl mb-2 block"></i>لا توجد طلبات هنا</div>'; return; }
+            list.innerHTML = items.map(o => `
+                <div class="bg-white rounded-2xl shadow-sm p-5 flex flex-col md:flex-row md:items-center gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span class="font-bold">${esc(o.clientName)}</span>
+                            <span class="${STATUS_CLS[o.status] || 'bg-gray-100'} text-xs font-bold px-2.5 py-0.5 rounded-full">${esc(o.status)}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 truncate">${esc(o.service)}</p>
+                        <p class="text-xs text-gray-400 mt-1">
+                            <span class="font-mono" dir="ltr">${esc(o.orderId)}</span> ·
+                            ${o.phone ? `<a href="tel:${esc(o.phone)}" class="hover:text-blue-600" dir="ltr">${esc(o.phone)}</a> ·` : ''}
+                            ${new Date(o.date).toLocaleString('ar-OM')}
+                        </p>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        ${o.receipt ? `<a href="${esc(o.receipt)}" target="_blank" rel="noopener" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold px-3 py-2 rounded-lg"><i class="fas fa-file-invoice ml-1"></i> الإيصال</a>` : ''}
+                        ${o.status !== 'مقبول' ? `<button onclick="setStatus('${esc(o.orderId)}','approved')" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold px-3 py-2 rounded-lg"><i class="fas fa-check ml-1"></i> قبول وفتح المحتوى</button>` : ''}
+                        ${o.status !== 'مرفوض' ? `<button onclick="setStatus('${esc(o.orderId)}','rejected')" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 text-sm font-bold px-3 py-2 rounded-lg">رفض</button>` : ''}
+                    </div>
+                </div>`).join('');
+        }
+
+        async function setStatus(orderId, status) {
+            if (status === 'rejected' && !confirm('تأكيد رفض الطلب؟ سيبقى المحتوى مقفلاً للعميل.')) return;
+            try {
+                const r = await api({ action: 'setOrderStatus', orderId, status });
+                toast(r.message);
+                const o = orders.find(x => x.orderId === orderId);
+                if (o) o.status = status === 'approved' ? 'مقبول' : 'مرفوض';
+                renderStats(); renderOrders();
+            } catch (ex) { toast(ex.message, true); }
+        }
+
+        function renderProjects() {
+            const list = document.getElementById('projects-list');
+            if (!projects.length) { list.innerHTML = '<div class="col-span-full bg-white rounded-2xl p-10 text-center text-gray-400">لا توجد أعمال حالياً.</div>'; return; }
+            list.innerHTML = projects.map(p => `
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col">
+                    <div class="h-32 bg-gradient-to-br from-slate-800 to-blue-700 relative">
+                        ${p.cover ? `<img src="${esc(p.cover)}" referrerpolicy="no-referrer" onerror="this.remove()" class="w-full h-full object-cover" alt="">`
+                                  : `<span class="absolute inset-0 flex items-center justify-center text-white/70 text-xs"><i class="fas fa-microchip ml-1"></i> صورة تقنية تلقائية</span>`}
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col">
+                        <p class="font-bold">${esc(p.title)}</p>
+                        <p class="text-blue-600 font-black text-sm mb-2">${esc(p.price)} ر.ع</p>
+                        <p class="text-xs text-gray-500 mb-3"><i class="fas fa-lock ml-1"></i> ${p.fileCount} ملف/رابط مقفل ·
+                            ${orders.filter(o => o.projectId === p.id && o.status === 'مقبول').length} مبيعات</p>
+                        <button onclick="deleteProject('${esc(p.id)}')" class="mt-auto bg-white border border-red-200 text-red-600 hover:bg-red-50 text-sm font-bold py-2 rounded-lg"><i class="fas fa-trash ml-1"></i> حذف</button>
+                    </div>
+                </div>`).join('');
+        }
+
+        async function deleteProject(id) {
+            if (!confirm('تأكيد حذف هذا العمل من المنصة؟')) return;
+            try { await api({ action: 'deleteProject', projectId: id }); toast('تم الحذف'); loadAll(); }
+            catch (ex) { toast(ex.message, true); }
+        }
+
+        // ===== إضافة عمل =====
+        const getBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve({ name: file.name, mimeType: file.type, base64: reader.result.split(',')[1] });
+            reader.onerror = reject;
+        });
+
+        document.getElementById('p-cover').addEventListener('change', e => {
+            const f = e.target.files[0], img = document.getElementById('cover-preview');
+            if (f) { img.src = URL.createObjectURL(f); img.classList.remove('hidden'); document.getElementById('cover-hint').classList.add('hidden'); }
+        });
+        document.getElementById('p-files').addEventListener('change', e => {
+            const names = [...e.target.files].map(f => esc(f.name));
+            document.getElementById('files-hint').innerHTML = names.length
+                ? `<i class="fas fa-check-circle text-green-600 text-2xl mb-1 block"></i>${names.length} ملف:<br><span class="text-xs">${names.join('<br>')}</span>`
+                : '<i class="fas fa-file-zipper text-3xl mb-2 block"></i>اضغط لاختيار ملف أو أكثر';
+        });
+
+        document.getElementById('add-project-form').addEventListener('submit', async e => {
             e.preventDefault();
             const btn = document.getElementById('add-btn');
-            btn.innerText = "جاري الرفع... يرجى الانتظار (قد يستغرق وقتاً للملفات الكبيرة)";
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin ml-1"></i> جاري الرفع... قد يستغرق وقتاً للملفات الكبيرة';
             btn.disabled = true;
-
             try {
                 const coverInput = document.getElementById('p-cover').files[0];
-                const filesInput = document.getElementById('p-files').files;
-                
-                const coverFile = await getBase64(coverInput);
                 const extraFiles = [];
-                for(let i=0; i<filesInput.length; i++){
-                    extraFiles.push(await getBase64(filesInput[i]));
-                }
-
-                const payload = {
-                    action: "addProject",
-                    password: document.getElementById('admin-pass').value,
+                for (const f of document.getElementById('p-files').files) extraFiles.push(await getBase64(f));
+                await api({
+                    action: 'addProject',
                     title: document.getElementById('p-title').value,
                     price: document.getElementById('p-price').value,
                     description: document.getElementById('p-desc').value,
                     externalLinks: document.getElementById('p-links').value,
-                    coverFile: coverFile,
-                    extraFiles: extraFiles
-                };
-
-                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const result = await response.json();
-                
-                if(result.result === 'success') {
-                    alert('تمت الإضافة بنجاح!');
-                    e.target.reset();
-                    loadProjects();
-                } else {
-                    alert('خطأ: ' + result.message);
-                }
-            } catch(err) {
-                alert('حدث خطأ أثناء المعالجة: ' + err.message + '\n(إذا كانت الملفات كبيرة جداً جرّب ملفات أصغر من 30MB أو استخدم رابطاً خارجياً)');
+                    coverFile: coverInput ? await getBase64(coverInput) : null,
+                    extraFiles
+                });
+                toast('تمت إضافة العمل بنجاح ✓');
+                e.target.reset();
+                document.getElementById('cover-preview').classList.add('hidden');
+                document.getElementById('cover-hint').classList.remove('hidden');
+                document.getElementById('p-files').dispatchEvent(new Event('change'));
+                loadAll();
+            } catch (ex) {
+                toast('خطأ: ' + ex.message + ' (للملفات الكبيرة جداً استخدم رابطاً خارجياً)', true);
             }
-            btn.innerText = "رفع العمل للمنصة";
+            btn.innerHTML = '<i class="fas fa-cloud-arrow-up ml-1"></i> رفع العمل للمنصة';
             btn.disabled = false;
         });
-
-        // حذف عمل
-        function deleteProject(id) {
-            const pass = prompt("أدخل كلمة المرور لتأكيد الحذف:");
-            if(!pass) return;
-            
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "deleteProject", password: pass, projectId: id })
-            })
-            .then(res => res.json())
-            .then(res => {
-                if(res.result === 'success') { alert('تم الحذف'); loadProjects(); }
-                else { alert('خطأ: ' + res.message); }
-            });
-        }
     </script>
 </body>
 </html>
