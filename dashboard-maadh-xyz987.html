@@ -60,42 +60,32 @@
         // *** ضع رابط الـ Web App هنا ***
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2guctcoM5yju4QHL-PB3qbvCn1aZqcv1GfiZXMCK7NytgIgAOtLXdRLYk4vXMgP4_kQ/exec';
 
-       // جلب الأعمال للحذف باستخدام JSONP
+        // جلب الأعمال وعرضها للحذف
         function loadProjects() {
-            document.getElementById('projects-list').innerHTML = '<p class="text-gray-500 text-sm">جاري جلب الأعمال...</p>';
-            const script = document.createElement('script');
-            script.src = SCRIPT_URL + '?callback=handleAdminData';
-            script.onerror = function() {
-                 document.getElementById('projects-list').innerHTML = '<p class="text-red-600 text-sm font-bold">حدث خطأ في الاتصال.</p>';
-            }
-            document.body.appendChild(script);
-        }
-
-        function handleAdminData(data) {
             const list = document.getElementById('projects-list');
-            list.innerHTML = '';
-            
-            if (data.error) {
-                 list.innerHTML = `<p class="text-red-600 text-sm font-bold">خطأ من الخادم: ${data.error}</p>`;
-                 return;
-            }
-
-            if(data.length === 0) { 
-                list.innerHTML = '<p class="text-sm font-bold text-slate-600">لا توجد أعمال حالياً.</p>'; 
-                return; 
-            }
-            
-            data.forEach(p => {
-                list.innerHTML += `
-                    <div class="flex justify-between items-center bg-gray-50 p-3 border rounded">
-                        <span class="font-bold">${p.title} (${p.price} ر.ع)</span>
-                        <button onclick="deleteProject('${p.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-800">حذف</button>
-                    </div>
-                `;
+            fetch(SCRIPT_URL + '?t=' + Date.now())
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.error) throw new Error(data.error);
+                list.innerHTML = '';
+                if(!Array.isArray(data) || data.length === 0) { list.innerHTML = '<p class="text-sm">لا توجد أعمال حالياً.</p>'; return; }
+                const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                data.forEach(p => {
+                    list.innerHTML += `
+                        <div class="flex justify-between items-center bg-gray-50 p-3 border rounded">
+                            <span class="font-bold">${esc(p.title)} (${esc(p.price)} ر.ع)</span>
+                            <button onclick="deleteProject('${String(p.id).replace(/[^A-Za-z0-9-]/g,'')}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-800">حذف</button>
+                        </div>
+                    `;
+                });
+            })
+            .catch(err => {
+                list.innerHTML = '<p class="text-sm text-red-600">تعذر جلب الأعمال: ' + err.message + '</p>';
             });
         }
 
         loadProjects();
+
         // تحويل الملف لمعالجة البيانات
         const getBase64 = (file) => new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -147,7 +137,7 @@
                     alert('خطأ: ' + result.message);
                 }
             } catch(err) {
-                alert('حدث خطأ أثناء المعالجة!');
+                alert('حدث خطأ أثناء المعالجة: ' + err.message + '\n(إذا كانت الملفات كبيرة جداً جرّب ملفات أصغر من 30MB أو استخدم رابطاً خارجياً)');
             }
             btn.innerText = "رفع العمل للمنصة";
             btn.disabled = false;
