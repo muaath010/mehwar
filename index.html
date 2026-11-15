@@ -28,7 +28,7 @@
     </h1>
 </a>
             <nav class="flex gap-4 md:gap-6 font-semibold text-sm md:text-base">
-                <a href="#portfolio" class="hover:text-blue-400 transition hidden md:inline">الأعمال والخدمات</a>
+                <a href="#portfolio" class="hover:text-blue-400 transition hidden md:inline">أعمالي والخدمات</a>
                 <a href="#payment" class="hover:text-blue-400 transition hidden md:inline">تأكيد الدفع</a>
                 <a href="#my-orders" class="hover:text-blue-400 transition"><i class="fas fa-box-open ml-1"></i>طلباتي</a>
             </nav>
@@ -74,10 +74,10 @@
                     <h4 class="text-2xl font-bold mb-8">معلومات التحويل البنكي</h4>
                     <div class="space-y-6">
                         <div><p class="text-slate-400 text-sm mb-1">البنك</p><p class="text-xl font-bold text-blue-400">بنك مسقط</p></div>
-                        <div><p class="text-slate-400 text-sm mb-1">اسم المستفيد</p><p class="text-lg font-semibold">Maadh Alyaqoubi</p></div>
+                        <div><p class="text-slate-400 text-sm mb-1">اسم المستفيد</p><p class="text-lg font-semibold">مِحور للتقنيات الحديثة</p></div>
                         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                            <p class="text-slate-400 text-sm mb-1">رقم التحويل</p>
-                            <p class="text-2xl font-mono font-black tracking-widest text-white select-all" dir="ltr">96986060</p>
+                            <p class="text-slate-400 text-sm mb-1">رقم الحساب</p>
+                            <p class="text-2xl font-mono font-black tracking-widest text-white select-all" dir="ltr">0000 0000 0000 0000</p>
                         </div>
                     </div>
                     <ol class="mt-8 space-y-2 text-sm text-slate-300 list-decimal pr-5">
@@ -94,6 +94,11 @@
                             <label class="block text-sm font-bold text-slate-700 mb-2">الخدمة المطلوبة وإجمالي السعر</label>
                             <input type="text" id="service-type" readonly required class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-100 font-bold text-blue-700 cursor-not-allowed" placeholder="الرجاء اختيار 'طلب الخدمة' من قسم الأعمال">
                             <input type="hidden" id="project-id">
+                        </div>
+                        <div id="plan-box" class="hidden">
+                            <label class="block text-sm font-bold text-slate-700 mb-2">نوع الاشتراك</label>
+                            <div id="plan-options" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+                            <p id="plan-summary" class="mt-3 text-sm bg-blue-50 text-blue-800 font-bold rounded-xl px-4 py-2"></p>
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2">اسم العميل / الجهة</label>
@@ -137,6 +142,8 @@
             <div class="p-8">
                 <h3 id="modal-title" class="text-3xl font-black text-slate-800 mb-4 border-b pb-4"></h3>
                 <p id="modal-desc" class="text-gray-600 leading-relaxed mb-6 whitespace-pre-wrap"></p>
+                <h4 class="font-bold text-slate-800 mb-2"><i class="fas fa-tags ml-1 text-blue-600"></i> خطط الاشتراك</h4>
+                <div id="modal-plans" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6"></div>
                 <div id="modal-lock" class="bg-amber-50 border border-amber-200 p-5 rounded-xl text-center">
                     <i class="fas fa-lock text-3xl text-amber-500 mb-2"></i>
                     <p class="font-bold text-amber-800 mb-1">المحتوى مقفل</p>
@@ -158,6 +165,22 @@
         const ORDERS_KEY = 'mihwar_orders';
 
         let globalProjects = [];
+
+        // خطط الدفع (يجب أن تطابق PLANS في كود Apps Script)
+        const PLANS = [
+            { key: 'weekly',    label: 'أسبوعي', per: 'أسبوعياً', days: 7 },
+            { key: 'monthly',   label: 'شهري',   per: 'شهرياً',   days: 30 },
+            { key: 'quarterly', label: 'فصلي',   per: 'فصلياً',   days: 90 },
+            { key: 'yearly',    label: 'سنوي',   per: 'سنوياً',   days: 365 },
+            { key: 'lifetime',  label: 'دائم',   per: 'دفعة واحدة', days: 0 }
+        ];
+        const planOf = k => PLANS.find(p => p.key === k) || { key: k, label: k, per: '', days: 0 };
+        const projectPlans = p => {
+            const src = (p.plans && Object.keys(p.plans).length) ? p.plans : { lifetime: p.price };
+            return PLANS.filter(pl => src[pl.key]).map(pl => ({ ...pl, price: src[pl.key] }));
+        };
+        const priceText = v => isNaN(parseFloat(v)) ? esc(v) : `${esc(v)} <span class="text-xs font-normal">ر.ع</span>`;
+        const fmtDate = iso => iso ? new Date(iso).toLocaleDateString('ar-OM', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
 
         // ===== صور تقنية افتراضية تُستخدم تلقائياً عند عدم رفع غلاف =====
         const TECH_IMAGES = [
@@ -235,7 +258,12 @@
                     </div>
                     <div class="p-6 flex flex-col flex-1">
                         <h4 class="text-xl font-bold mb-2 text-slate-800">${esc(p.title)}</h4>
-                        <p class="text-2xl font-black text-blue-600 mb-6">${esc(p.price)} <span class="text-sm font-normal text-gray-500">ر.ع</span></p>
+                        <div class="flex flex-wrap gap-1.5 mb-6">
+                            ${projectPlans(p).map(pl => `
+                                <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-lg border border-blue-100">
+                                    ${pl.label}: ${priceText(pl.price)}
+                                </span>`).join('')}
+                        </div>
                         <div class="flex gap-2 mt-auto">
                             <button onclick="openModal(${idx})" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 rounded-lg transition text-sm">التفاصيل</button>
                             <button onclick="selectService(${idx})" class="w-2/3 bg-slate-900 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition text-sm"><i class="fas fa-unlock-alt ml-1"></i> اطلب لفتح المحتوى</button>
@@ -259,6 +287,12 @@
             cover.src = coverFor(p);
             document.getElementById('modal-title').innerText = p.title;
             document.getElementById('modal-desc').innerText = p.description;
+            document.getElementById('modal-plans').innerHTML = projectPlans(p).map(pl => `
+                <button onclick="closeModal(); selectService(${idx}, '${pl.key}')" class="border border-slate-200 hover:border-blue-500 hover:bg-blue-50 rounded-xl p-3 text-center transition">
+                    <p class="text-xs text-gray-500">${pl.label}</p>
+                    <p class="font-black text-blue-600">${priceText(pl.price)}</p>
+                    <p class="text-[11px] text-gray-400">${pl.days ? pl.days + ' يوم' : 'بدون انتهاء'}</p>
+                </button>`).join('');
             document.getElementById('modal-lock-text').innerText = p.fileCount > 0
                 ? `يحتوي هذا العمل على ${p.fileCount} ملف/رابط، ستتمكن من فتحها وتحميلها بعد الدفع واعتماد الإيصال.`
                 : 'سيتم تسليم هذا العمل بعد الدفع واعتماد الإيصال.';
@@ -268,15 +302,51 @@
 
         function closeModal() { document.getElementById('details-modal').classList.add('hidden'); }
 
-        function selectService(idx) {
+        let selectedPlan = '';
+
+        function selectService(idx, planKey) {
             const p = globalProjects[idx];
             if (!p) return;
+            const plans = projectPlans(p);
             const input = document.getElementById('service-type');
-            input.value = `${p.title} ( السعر: ${p.price} ر.ع )`;
+            input.value = p.title;
             document.getElementById('project-id').value = p.id;
+
+            document.getElementById('plan-box').classList.remove('hidden');
+            document.getElementById('plan-options').innerHTML = plans.map(pl => `
+                <label class="cursor-pointer">
+                    <input type="radio" name="plan" value="${pl.key}" class="peer hidden">
+                    <div class="border-2 border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50 rounded-xl p-3 text-center transition hover:border-blue-300">
+                        <p class="text-xs text-gray-500">${pl.label}</p>
+                        <p class="font-black text-slate-800">${priceText(pl.price)}</p>
+                    </div>
+                </label>`).join('');
+            document.querySelectorAll('input[name=plan]').forEach(r => r.addEventListener('change', () => pickPlan(p, r.value)));
+
+            const initial = plans.find(pl => pl.key === planKey) || plans[0];
+            if (initial) {
+                document.querySelector(`input[name=plan][value="${initial.key}"]`).checked = true;
+                pickPlan(p, initial.key);
+            }
             input.classList.remove('bg-slate-100', 'text-blue-700');
             input.classList.add('bg-blue-50', 'text-green-700', 'border-green-500');
             window.location.href = "#payment";
+        }
+
+        function pickPlan(p, key) {
+            selectedPlan = key;
+            const pl = projectPlans(p).find(x => x.key === key);
+            if (!pl) return;
+            const end = pl.days ? new Date(Date.now() + pl.days * 86400000) : null;
+            document.getElementById('plan-summary').innerHTML =
+                `<i class="fas fa-receipt ml-1"></i> المبلغ المطلوب تحويله: ${priceText(pl.price)} — اشتراك ${pl.label}` +
+                (end ? ` (${pl.days} يوماً من تاريخ اعتماد الطلب)` : ' (وصول دائم)');
+        }
+
+        function resetPlanBox() {
+            selectedPlan = '';
+            document.getElementById('plan-box').classList.add('hidden');
+            document.getElementById('plan-options').innerHTML = '';
         }
 
         // ===== إرسال الطلب =====
@@ -290,6 +360,7 @@
             e.preventDefault();
             const projectId = document.getElementById('project-id').value;
             if (!projectId) { alert('الرجاء اختيار الخدمة من قسم الأعمال أولاً.'); window.location.href = "#portfolio"; return; }
+            if (!selectedPlan) { alert('الرجاء اختيار نوع الاشتراك.'); return; }
 
             const btn = document.getElementById('submit-btn');
             btn.innerText = 'جاري الإرسال...';
@@ -300,6 +371,7 @@
                 const payload = {
                     action: "submitOrder",
                     projectId: projectId,
+                    plan: selectedPlan,
                     clientName: document.getElementById('client-name').value,
                     phone: document.getElementById('client-phone').value,
                     receiptFile: fileObj
@@ -312,6 +384,7 @@
                     alert(`تم إرسال طلبك بنجاح!\n\nرقم طلبك: ${result.orderId}\nاحتفظ به، وستجد طلبك في قسم "طلباتي" وتُفتح الملفات بعد اعتماد الدفع.`);
                     e.target.reset();
                     document.getElementById('project-id').value = '';
+                    resetPlanBox();
                     renderOrders();
                     window.location.href = '#my-orders';
                 } else alert("خطأ: " + result.message);
@@ -335,9 +408,10 @@
         }
 
         const STATUS_STYLE = {
-            'مقبول':        { cls: 'bg-green-100 text-green-700', icon: 'fa-check-circle' },
-            'مرفوض':        { cls: 'bg-red-100 text-red-700', icon: 'fa-times-circle' },
-            'قيد المراجعة': { cls: 'bg-amber-100 text-amber-700', icon: 'fa-hourglass-half' }
+            'مقبول':        { cls: 'bg-green-100 text-green-700', icon: 'fa-check-circle', label: 'فعّال' },
+            'منتهي':        { cls: 'bg-slate-200 text-slate-700', icon: 'fa-clock', label: 'منتهي' },
+            'مرفوض':        { cls: 'bg-red-100 text-red-700', icon: 'fa-times-circle', label: 'مرفوض' },
+            'قيد المراجعة': { cls: 'bg-amber-100 text-amber-700', icon: 'fa-hourglass-half', label: 'قيد المراجعة' }
         };
 
         async function fetchOrder(code) {
@@ -345,17 +419,67 @@
             return res.json();
         }
 
+        // تحميل ملف عبر السكربت (يتحقق الخادم من أن الاشتراك ما زال فعّالاً)
+        async function downloadFile(code, i, btn) {
+            const old = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> جاري التحميل...';
+            btn.disabled = true;
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=download&order=${encodeURIComponent(code)}&i=${i}&t=${Date.now()}`);
+                const d = await res.json();
+                if (d.error) throw new Error(d.error);
+                if (d.url) { window.open(d.url, '_blank', 'noopener'); }
+                else {
+                    const bytes = Uint8Array.from(atob(d.base64), c => c.charCodeAt(0));
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(new Blob([bytes], { type: d.mimeType }));
+                    a.download = d.name;
+                    document.body.appendChild(a); a.click(); a.remove();
+                    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+                }
+            } catch (err) {
+                alert('تعذر التحميل: ' + err.message);
+                renderOrders();
+            }
+            btn.innerHTML = old;
+            btn.disabled = false;
+        }
+
+        function renewOrder(projectId, plan) {
+            const idx = globalProjects.findIndex(p => p.id === projectId);
+            if (idx === -1) { alert('هذا العمل لم يعد متاحاً.'); return; }
+            selectService(idx, plan);
+        }
+
         function orderCard(code, o) {
             if (!o || o.error) return `<div class="border rounded-xl p-4 text-red-600 text-sm">${esc(code)}: تعذر جلب الحالة</div>`;
             if (!o.found) return `<div class="border rounded-xl p-4 text-gray-500 text-sm"><span class="font-mono">${esc(code)}</span>: رقم الطلب غير موجود</div>`;
             const s = STATUS_STYLE[o.status] || STATUS_STYLE['قيد المراجعة'];
+            const pl = planOf(o.plan);
+
+            let period = '';
+            if (o.start && (o.status === 'مقبول' || o.status === 'منتهي')) {
+                if (o.end) {
+                    const left = Math.ceil((new Date(o.end) - Date.now()) / 86400000);
+                    period = `<p class="text-xs text-gray-500 mt-1"><i class="far fa-calendar ml-1"></i> من ${fmtDate(o.start)} إلى ${fmtDate(o.end)}
+                        ${left > 0 ? `<span class="${left <= 3 ? 'text-red-600' : 'text-green-700'} font-bold">· متبقٍ ${left} يوم</span>` : ''}</p>`;
+                } else {
+                    period = `<p class="text-xs text-green-700 font-bold mt-1"><i class="fas fa-infinity ml-1"></i> وصول دائم</p>`;
+                }
+            }
+
             let body = '';
-            if (o.approved) {
+            if (o.active) {
                 body = (o.files && o.files.length)
-                    ? `<div class="mt-4 grid gap-2">${o.files.map((f, i) => `
-                        <a href="${esc(f)}" target="_blank" rel="noopener" class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-download"></i> تحميل / فتح المرفق ${i + 1}</a>`).join('')}</div>`
+                    ? `<div class="mt-4 grid gap-2">${o.files.map(f => `
+                        <button onclick="downloadFile('${esc(o.orderId)}', ${f.i}, this)" class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold px-4 py-2 rounded-lg transition text-right">
+                            <i class="fas ${f.type === 'link' ? 'fa-external-link-alt' : 'fa-download'}"></i> ${esc(f.name)}</button>`).join('')}</div>`
                     : `<p class="mt-3 text-sm text-gray-600">تم اعتماد طلبك، وسيتم التواصل معك لتسليم العمل.</p>`;
+            } else if (o.status === 'منتهي') {
+                body = `<div class="mt-3 flex flex-wrap items-center gap-3">
+                    <p class="text-sm text-gray-600"><i class="fas fa-lock ml-1"></i> انتهى اشتراكك وأُقفلت الملفات.</p>
+                    <button onclick="renewOrder('${esc(o.projectId)}', '${esc(o.plan)}')" class="bg-slate-900 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-lg"><i class="fas fa-rotate ml-1"></i> تجديد الاشتراك</button>
+                </div>`;
             } else if (o.status === 'مرفوض') {
                 body = `<p class="mt-3 text-sm text-red-600">لم يتم قبول الإيصال. يرجى التواصل معنا أو إعادة إرسال إيصال صحيح.</p>`;
             } else {
@@ -363,12 +487,13 @@
             }
             return `
                 <div class="border border-slate-200 rounded-2xl p-5 shadow-sm">
-                    <div class="flex flex-wrap justify-between items-center gap-2">
+                    <div class="flex flex-wrap justify-between items-start gap-2">
                         <div>
                             <p class="font-bold text-slate-800">${esc(o.title)}</p>
-                            <p class="font-mono text-xs text-gray-500" dir="ltr">${esc(o.orderId)}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">اشتراك ${esc(pl.label)}${o.amount ? ' · ' + esc(o.amount) + ' ر.ع' : ''} · <span class="font-mono" dir="ltr">${esc(o.orderId)}</span></p>
+                            ${period}
                         </div>
-                        <span class="${s.cls} text-xs font-bold px-3 py-1 rounded-full"><i class="fas ${s.icon} ml-1"></i>${esc(o.status)}</span>
+                        <span class="${s.cls} text-xs font-bold px-3 py-1 rounded-full"><i class="fas ${s.icon} ml-1"></i>${s.label}</span>
                     </div>
                     ${body}
                 </div>`;
