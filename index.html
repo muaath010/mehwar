@@ -24,7 +24,6 @@
             overflow-x: hidden;
         }
         .hero-bg {
-            /* خلفية تقنية مع طبقة لونية داكنة */
             background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
                         url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop') center/cover fixed;
         }
@@ -38,9 +37,15 @@
     <!-- الشريط العلوي -->
     <header class="bg-slate-900 text-white py-4 shadow-lg fixed w-full z-50 top-0 opacity-95">
         <div class="container mx-auto px-6 flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-wider">
-                مِحور للتقنيات الحديثة <i class="fas fa-microchip text-blue-400 ml-2"></i>
-            </h1>
+            <a href="#home" class="flex items-center gap-3 transition transform hover:scale-105">
+    <!-- استبدل logo.png باسم ملف الشعار الخاص بك، وإذا وضعته في مجلد اكتب images/logo.png -->
+    <img src="logo.png" alt="شعار مِحور للتقنيات الحديثة" class="h-10 md:h-12 w-auto object-contain">
+    
+    <!-- سيختفي النص في شاشات الجوال الصغيرة جداً لتوفير مساحة للشعار -->
+    <h1 class="text-xl md:text-2xl font-bold tracking-wider hidden sm:block">
+        مِحور للتقنيات الحديثة
+    </h1>
+</a>
             <nav class="hidden md:flex space-x-6 space-x-reverse font-semibold">
                 <a href="#home" class="hover:text-blue-400 transition">الرئيسية</a>
                 <a href="#portfolio" class="hover:text-blue-400 transition">أعمالي</a>
@@ -50,7 +55,7 @@
         </div>
     </header>
 
-    <!-- القسم الترحيبي (Hero) -->
+    <!-- القسم الترحيبي -->
     <section id="home" class="hero-bg min-h-screen flex items-center justify-center text-center text-white pt-16">
         <div class="container mx-auto px-6" data-aos="zoom-in" data-aos-duration="1200">
             <div class="inline-block bg-blue-600 text-sm font-bold px-4 py-1 rounded-full mb-6 shadow-lg">
@@ -76,8 +81,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                
-                <!-- بطاقة العمل 1: فريق نعاون -->
+                <!-- بطاقة العمل 1 -->
                 <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 card-hover group" data-aos="fade-up" data-aos-delay="100">
                     <div class="relative overflow-hidden h-56">
                         <img src="https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=2006&auto=format&fit=crop" alt="Na'awen Delivery" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
@@ -95,7 +99,7 @@
                     </div>
                 </div>
 
-                <!-- بطاقة العمل 2: EduPoints -->
+                <!-- بطاقة العمل 2 -->
                 <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 card-hover group" data-aos="fade-up" data-aos-delay="200">
                     <div class="relative overflow-hidden h-56">
                         <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop" alt="EduPoints System" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
@@ -113,7 +117,7 @@
                     </div>
                 </div>
 
-                <!-- بطاقة العمل 3: الأمن السيبراني -->
+                <!-- بطاقة العمل 3 -->
                 <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 card-hover group" data-aos="fade-up" data-aos-delay="300">
                     <div class="relative overflow-hidden h-56">
                         <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop" alt="Cyber Security" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
@@ -130,14 +134,12 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
 
     <!-- قسم الأسعار -->
     <section id="pricing" class="py-24 bg-slate-900 text-white relative">
-        <!-- زخرفة خلفية -->
         <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform translate-x-1/2 -translate-y-1/2"></div>
         <div class="absolute bottom-0 left-0 w-64 h-64 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform -translate-x-1/2 translate-y-1/2"></div>
         
@@ -148,7 +150,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto text-center items-center">
-                
                 <!-- الباقة الأساسية -->
                 <div class="bg-slate-800 rounded-3xl p-8 border border-slate-700" data-aos="zoom-in-up" data-aos-delay="100">
                     <h4 class="text-2xl font-bold mb-2">الواجهة الرقمية</h4>
@@ -191,7 +192,6 @@
                     </ul>
                     <a href="#payment" class="block w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition">تواصل معنا</a>
                 </div>
-
             </div>
         </div>
     </section>
@@ -205,24 +205,20 @@
             </div>
 
             <div class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row" data-aos="fade-up">
-                
                 <!-- تفاصيل الحساب البنكي -->
                 <div class="lg:w-2/5 bg-blue-700 text-white p-10 flex flex-col justify-center relative overflow-hidden">
                     <i class="fas fa-university absolute -bottom-10 -right-10 text-9xl text-blue-800 opacity-50 transform -rotate-12"></i>
                     <div class="relative z-10">
                         <h4 class="text-2xl font-bold mb-8">معلومات التحويل البنكي</h4>
-                        
                         <div class="space-y-6">
                             <div>
                                 <p class="text-blue-200 text-sm mb-1">البنك المعتمد</p>
                                 <p class="text-xl font-bold"><i class="fas fa-building mr-2 text-yellow-400"></i> بنك مسقط</p>
                             </div>
-                            
                             <div>
                                 <p class="text-blue-200 text-sm mb-1">اسم المستفيد</p>
                                 <p class="text-lg font-semibold">مِحور للتقنيات الحديثة</p>
                             </div>
-
                             <div class="bg-blue-800 p-4 rounded-xl border border-blue-600 mt-4">
                                 <p class="text-blue-200 text-sm mb-1">رقم الحساب</p>
                                 <p class="text-2xl font-mono font-black tracking-widest select-all" dir="ltr">0000 0000 0000 0000</p>
@@ -234,7 +230,6 @@
                 <!-- نموذج الرفع -->
                 <div class="lg:w-3/5 p-10">
                     <form id="transfer-form" class="space-y-6">
-                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="client-name" class="block text-sm font-bold text-slate-700 mb-2">اسم العميل / الجهة</label>
@@ -344,21 +339,8 @@
                         fileBase64: base64String
                     };
 
-                    // ضع رابط الـ Web App الخاص بـ Google Apps Script هنا
-                    const scriptURL = 'YOUR_WEB_APP_URL_HERE'; 
-
-                    // حماية للمعاينة: إذا لم يتم تغيير الرابط
-                    if(scriptURL === 'YOUR_WEB_APP_URL_HERE') {
-                        setTimeout(() => {
-                            alert('تنبيه: يجب استبدال YOUR_WEB_APP_URL_HERE في السطر 310 برابط تطبيق الويب من جوجل ليتم الرفع بشكل فعلي. الكود جاهز برمجياً.');
-                            form.reset();
-                            document.getElementById('file-name-display').classList.add('hidden');
-                            submitBtn.innerHTML = originalBtnHtml;
-                            submitBtn.disabled = false;
-                            submitBtn.classList.remove('opacity-75');
-                        }, 1500);
-                        return;
-                    }
+                    // رابط Google Apps Script الخاص بك
+                    const scriptURL = 'https://script.google.com/macros/s/AKfycbwRuUN19R0ZlGFxvrsDb9BfChKh-gO3BhdMVjDQPwNT6p2JyDMc1I0a_wZOLMkUcETbWQ/exec'; 
 
                     // إرسال البيانات عبر API
                     fetch(scriptURL, {
