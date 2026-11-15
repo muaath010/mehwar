@@ -94,6 +94,11 @@
                         <label class="block text-sm font-bold mb-1">نبذة عن العمل <span class="text-gray-400 font-normal">(تظهر للجميع في زر التفاصيل)</span></label>
                         <textarea id="p-desc" required class="field h-28"></textarea>
                     </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold mb-1"><i class="fab fa-youtube text-red-600 ml-1"></i> رابط فيديو تعريفي <span class="text-gray-400 font-normal">(اختياري — يظهر للجميع مع النبذة: يوتيوب، فيميو، Google Drive أو رابط mp4)</span></label>
+                        <input type="url" id="p-video" class="field" dir="ltr" placeholder="https://youtu.be/...">
+                        <p id="p-video-hint" class="text-xs mt-1 hidden"></p>
+                    </div>
                     <div>
                         <label class="block text-sm font-bold mb-1">صورة الغلاف <span class="text-gray-400 font-normal">(اختياري — تُوضع صورة تقنية تلقائياً)</span></label>
                         <label class="drop flex flex-col items-center justify-center h-44 overflow-hidden relative">
@@ -124,12 +129,16 @@
     <div id="plans-modal" class="fixed inset-0 bg-black/60 z-40 hidden flex items-center justify-center p-4">
         <form id="plans-form" class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-black text-lg">تعديل أسعار: <span id="plans-modal-title"></span></h3>
+                <h3 class="font-black text-lg">تعديل: <span id="plans-modal-title"></span></h3>
                 <button type="button" onclick="closePlansModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fas fa-times"></i></button>
             </div>
+            <label class="block text-sm font-bold mb-1"><i class="fab fa-youtube text-red-600 ml-1"></i> رابط الفيديو التعريفي <span class="text-gray-400 font-normal">(اتركه فارغاً لإزالته)</span></label>
+            <input type="url" id="edit-video" class="field mb-1" dir="ltr" placeholder="https://youtu.be/...">
+            <p id="edit-video-hint" class="text-xs mb-4 hidden"></p>
+            <label class="block text-sm font-bold mb-2">خطط الدفع والأسعار (ر.ع)</label>
             <div id="edit-plans" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5"></div>
             <p class="text-xs text-gray-500 mb-4">التعديل يطبَّق على الطلبات الجديدة فقط، ولا يغيّر الاشتراكات الحالية.</p>
-            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl">حفظ الأسعار</button>
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl">حفظ التعديلات</button>
         </form>
     </div>
 
@@ -183,6 +192,28 @@
                 if (v) out[cb.dataset.plan] = v;
             });
             return out;
+        }
+
+        // التعرف على نوع رابط الفيديو (نفس منطق صفحة الموقع)
+        function videoKind(url) {
+            url = String(url || '').trim();
+            if (!url) return '';
+            if (/(youtube\.com\/(watch\?.*v=|shorts\/|embed\/|live\/)|youtu\.be\/)[\w-]{6,}/.test(url)) return 'يوتيوب';
+            if (/vimeo\.com\/(video\/)?\d+/.test(url)) return 'فيميو';
+            if (/drive\.google\.com\/.*(\/d\/|[?&]id=)[\w-]+/.test(url)) return 'Google Drive (تأكد أن الملف مشارك: أي شخص لديه الرابط)';
+            if (/\.(mp4|webm|ogg)(\?|#|$)/i.test(url)) return 'ملف فيديو مباشر';
+            return null;
+        }
+        function bindVideoHint(inputId, hintId) {
+            const input = document.getElementById(inputId), hint = document.getElementById(hintId);
+            const update = () => {
+                const k = videoKind(input.value);
+                hint.classList.toggle('hidden', k === '');
+                hint.className = hint.className.replace(/text-(green|amber)-\d+/g, '') + (k ? ' text-green-700' : ' text-amber-600');
+                hint.innerHTML = k ? `<i class="fas fa-check-circle ml-1"></i> سيُعرض داخل الصفحة: ${k}` : '<i class="fas fa-triangle-exclamation ml-1"></i> رابط غير معروف — سيظهر كزر "مشاهدة الفيديو" بدلاً من التشغيل داخل الصفحة';
+            };
+            input.addEventListener('input', update);
+            return update;
         }
 
         let PASS = '';
@@ -337,10 +368,10 @@
                         <div class="flex flex-wrap gap-1 my-2">
                             ${PLANS.filter(pl => p.plans && p.plans[pl.key]).map(pl => `<span class="bg-blue-50 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded">${pl.label}: ${esc(p.plans[pl.key])}</span>`).join('')}
                         </div>
-                        <p class="text-xs text-gray-500 mb-3"><i class="fas fa-lock ml-1"></i> ${p.fileCount} ملف/رابط مقفل ·
+                        <p class="text-xs text-gray-500 mb-3">${p.video ? '<i class="fas fa-circle-play text-red-600 ml-1"></i> فيديو تعريفي · ' : ''}<i class="fas fa-lock ml-1"></i> ${p.fileCount} ملف/رابط مقفل ·
                             ${orders.filter(o => o.projectId === p.id && o.status === 'مقبول').length} اشتراك فعّال</p>
                         <div class="mt-auto grid grid-cols-2 gap-2">
-                            <button onclick="openPlansModal('${esc(p.id)}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold py-2 rounded-lg"><i class="fas fa-tags ml-1"></i> الأسعار</button>
+                            <button onclick="openPlansModal('${esc(p.id)}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold py-2 rounded-lg"><i class="fas fa-pen ml-1"></i> تعديل</button>
                             <button onclick="deleteProject('${esc(p.id)}')" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 text-sm font-bold py-2 rounded-lg"><i class="fas fa-trash ml-1"></i> حذف</button>
                         </div>
                     </div>
@@ -354,6 +385,8 @@
             editingProject = id;
             document.getElementById('plans-modal-title').textContent = p.title;
             renderPlanInputs('edit-plans', p.plans);
+            document.getElementById('edit-video').value = p.video || '';
+            updateEditVideoHint();
             document.getElementById('plans-modal').classList.remove('hidden');
         }
         function closePlansModal() { document.getElementById('plans-modal').classList.add('hidden'); }
@@ -363,8 +396,8 @@
             const plans = readPlanInputs('edit-plans');
             if (!Object.keys(plans).length) { toast('فعّل خطة واحدة على الأقل واكتب سعرها', true); return; }
             try {
-                await api({ action: 'updatePlans', projectId: editingProject, plans });
-                toast('تم تحديث الأسعار ✓'); closePlansModal(); loadAll();
+                await api({ action: 'updatePlans', projectId: editingProject, plans, videoUrl: document.getElementById('edit-video').value.trim() });
+                toast('تم حفظ التعديلات ✓'); closePlansModal(); loadAll();
             } catch (ex) { toast(ex.message, true); }
         });
 
@@ -409,6 +442,7 @@
                     title: document.getElementById('p-title').value,
                     plans,
                     description: document.getElementById('p-desc').value,
+                    videoUrl: document.getElementById('p-video').value.trim(),
                     externalLinks: document.getElementById('p-links').value,
                     coverFile: coverInput ? await getBase64(coverInput) : null,
                     extraFiles
@@ -419,6 +453,7 @@
                 document.getElementById('cover-hint').classList.remove('hidden');
                 document.getElementById('p-files').dispatchEvent(new Event('change'));
                 renderPlanInputs('add-plans');
+                updateAddVideoHint();
                 loadAll();
             } catch (ex) {
                 toast('خطأ: ' + ex.message + ' (للملفات الكبيرة جداً استخدم رابطاً خارجياً)', true);
@@ -428,6 +463,8 @@
         });
 
         renderPlanInputs('add-plans');
+        const updateAddVideoHint = bindVideoHint('p-video', 'p-video-hint');
+        const updateEditVideoHint = bindVideoHint('edit-video', 'edit-video-hint');
     </script>
 </body>
 </html>
