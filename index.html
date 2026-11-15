@@ -127,61 +127,73 @@
         let globalProjects = [];
 
       // جلب وعرض الأعمال مع معالجة الـ CORS بشكل صحيح
-       // جلب الأعمال باستخدام JSONP لتخطي جميع مشاكل الـ CORS
-        function loadProjectsJSONP() {
-            const script = document.createElement('script');
-            // نضيف callback=handleProjectsData للرابط
-            script.src = SCRIPT_URL + '?callback=handleProjectsData';
-            script.onerror = function() {
-                document.getElementById('dynamic-portfolio').innerHTML = '<div class="col-span-full text-center text-red-500 font-bold p-8">حدث خطأ في الاتصال بالخادم. يرجى المحاولة لاحقاً.</div>';
-            };
-            document.body.appendChild(script);
+        const FALLBACK_IMG = 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop';
+
+        // حماية النصوص من كسر الصفحة (مثل وجود علامة ' أو " في العنوان)
+        function esc(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
-        // هذه الدالة سيتم استدعاؤها تلقائياً من جوجل سكريبت
-        function handleProjectsData(data) {
+        // تحويل روابط Google Drive القديمة إلى روابط صور مباشرة
+        function toImageUrl(url) {
+            if (!url) return '';
+            const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (m && url.includes('drive.google.com') && !url.includes('/thumbnail')) {
+                return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w1200';
+            }
+            return url;
+        }
+
+        // ?t= يمنع المتصفح من عرض نسخة قديمة مخزنة من القائمة
+        fetch(SCRIPT_URL + '?t=' + Date.now())
+        .then(res => {
+            // إذا لم تكن الاستجابة ناجحة (مثل خطأ في الخادم)
+            if (!res.ok) throw new Error('خطأ في استجابة الخادم');
+            return res.json();
+        })
+        .then(data => {
+            if (data && data.error) throw new Error(data.error);
+            globalProjects = Array.isArray(data) ? data : [];
             const container = document.getElementById('dynamic-portfolio');
             container.innerHTML = '';
-            
-            if (data.error) {
-                container.innerHTML = `<div class="col-span-full text-center text-red-500 font-bold p-8">خطأ في النظام: ${data.error}</div>`;
-                return;
-            }
 
-            if(!data || data.length === 0) {
+            if(globalProjects.length === 0) {
                 container.innerHTML = '<div class="col-span-full text-center text-gray-500 font-bold p-8">لا توجد أعمال معروضة حالياً.</div>';
                 return;
             }
 
-            globalProjects = data;
-
-            data.forEach(p => {
-                container.innerHTML += `
+            let html = '';
+            globalProjects.forEach((p, idx) => {
+                const cover = toImageUrl(p.cover) || FALLBACK_IMG;
+                html += `
                     <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
                         <div class="h-56 overflow-hidden bg-slate-200">
-                            <!-- إذا لم يتم رفع صورة، تظهر صورة افتراضية -->
-                            <img src="${p.cover ? p.cover : 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop'}" alt="${p.title}" class="w-full h-full object-cover">
+                            <!-- إذا لم يتم رفع صورة أو تعذر تحميلها، تظهر صورة افتراضية -->
+                            <img src="${esc(cover)}" alt="${esc(p.title)}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_IMG}'" class="w-full h-full object-cover">
                         </div>
                         <div class="p-6">
-                            <h4 class="text-xl font-bold mb-2 text-slate-800">${p.title}</h4>
-                            <p class="text-2xl font-black text-blue-600 mb-6">${p.price} <span class="text-sm font-normal text-gray-500">ر.ع</span></p>
-                            
+                            <h4 class="text-xl font-bold mb-2 text-slate-800">${esc(p.title)}</h4>
+                            <p class="text-2xl font-black text-blue-600 mb-6">${esc(p.price)} <span class="text-sm font-normal text-gray-500">ر.ع</span></p>
+
                             <div class="flex gap-2">
-                                <button onclick="openModal('${p.id}')" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 rounded-lg transition text-sm">التفاصيل</button>
-                                <button onclick="selectService('${p.title}', '${p.price}')" class="w-2/3 bg-slate-900 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition text-sm">طلب الخدمة</button>
+                                <button onclick="openModal(${idx})" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 rounded-lg transition text-sm">التفاصيل</button>
+                                <button onclick="selectService(${idx})" class="w-2/3 bg-slate-900 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition text-sm">طلب الخدمة</button>
                             </div>
                         </div>
                     </div>
                 `;
             });
-            
-        }
-
-        // بدء تحميل الأعمال عند فتح الصفحة
-        loadProjectsJSONP();
+            container.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            document.getElementById('dynamic-portfolio').innerHTML = '<div class="col-span-full text-center text-red-500 font-bold p-8">حدث خطأ في جلب الأعمال. تأكد من إعدادات Google Apps Script.</div>';
+        });
         // دوال النافذة المنبثقة (التفاصيل)
-        function openModal(id) {
-            const project = globalProjects.find(p => p.id === id);
+        function openModal(idx) {
+            const project = globalProjects[idx];
             if(!project) return;
             
             document.getElementById('modal-title').innerText = project.title;
@@ -191,12 +203,12 @@
             const filesDiv = document.getElementById('modal-files');
             linksContainer.innerHTML = '';
             
-            if(project.files && project.files.trim() !== "") {
+            if(project.files && String(project.files).trim() !== "") {
                 filesDiv.classList.remove('hidden');
-                const links = project.files.split(' | ');
+                const links = String(project.files).split(' | ');
                 links.forEach((link, idx) => {
                     if(link.trim() !== "") {
-                        linksContainer.innerHTML += `<a href="${link.trim()}" target="_blank" class="text-blue-600 hover:underline"><i class="fas fa-external-link-alt ml-1"></i> رابط المرفق ${idx + 1}</a>`;
+                        linksContainer.innerHTML += `<a href="${esc(link.trim())}" target="_blank" rel="noopener" class="text-blue-600 hover:underline"><i class="fas fa-external-link-alt ml-1"></i> رابط المرفق ${idx + 1}</a>`;
                     }
                 });
             } else {
@@ -211,7 +223,10 @@
         }
 
         // اختيار خدمة للانتقال للدفع
-        function selectService(title, price) {
+        function selectService(idx) {
+            const p = globalProjects[idx];
+            if (!p) return;
+            const title = p.title, price = p.price;
             const input = document.getElementById('service-type');
             input.value = `${title} ( السعر: ${price} ر.ع )`;
             input.classList.remove('bg-slate-100', 'text-blue-700');
