@@ -127,24 +127,33 @@
         let globalProjects = [];
 
       // جلب وعرض الأعمال مع معالجة الـ CORS بشكل صحيح
-        fetch(SCRIPT_URL, {
-            method: 'GET',
-            mode: 'cors' // يسمح بجلب البيانات عبر النطاقات
-        })
-        .then(res => {
-            // إذا لم تكن الاستجابة ناجحة (مثل خطأ في الخادم)
-            if (!res.ok) throw new Error('خطأ في استجابة الخادم');
-            return res.json();
-        })
-        .then(data => {
-            globalProjects = data;
+       // جلب الأعمال باستخدام JSONP لتخطي جميع مشاكل الـ CORS
+        function loadProjectsJSONP() {
+            const script = document.createElement('script');
+            // نضيف callback=handleProjectsData للرابط
+            script.src = SCRIPT_URL + '?callback=handleProjectsData';
+            script.onerror = function() {
+                document.getElementById('dynamic-portfolio').innerHTML = '<div class="col-span-full text-center text-red-500 font-bold p-8">حدث خطأ في الاتصال بالخادم. يرجى المحاولة لاحقاً.</div>';
+            };
+            document.body.appendChild(script);
+        }
+
+        // هذه الدالة سيتم استدعاؤها تلقائياً من جوجل سكريبت
+        function handleProjectsData(data) {
             const container = document.getElementById('dynamic-portfolio');
             container.innerHTML = '';
             
+            if (data.error) {
+                container.innerHTML = `<div class="col-span-full text-center text-red-500 font-bold p-8">خطأ في النظام: ${data.error}</div>`;
+                return;
+            }
+
             if(!data || data.length === 0) {
                 container.innerHTML = '<div class="col-span-full text-center text-gray-500 font-bold p-8">لا توجد أعمال معروضة حالياً.</div>';
                 return;
             }
+
+            globalProjects = data;
 
             data.forEach(p => {
                 container.innerHTML += `
@@ -165,11 +174,11 @@
                     </div>
                 `;
             });
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            document.getElementById('dynamic-portfolio').innerHTML = '<div class="col-span-full text-center text-red-500 font-bold p-8">حدث خطأ في جلب الأعمال. تأكد من إعدادات Google Apps Script.</div>';
-        });
+            
+        }
+
+        // بدء تحميل الأعمال عند فتح الصفحة
+        loadProjectsJSONP();
         // دوال النافذة المنبثقة (التفاصيل)
         function openModal(id) {
             const project = globalProjects.find(p => p.id === id);
