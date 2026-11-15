@@ -126,40 +126,50 @@
         
         let globalProjects = [];
 
-        // جلب وعرض الأعمال
-        fetch(SCRIPT_URL)
-            .then(res => res.json())
-            .then(data => {
-                globalProjects = data;
-                const container = document.getElementById('dynamic-portfolio');
-                container.innerHTML = '';
-                
-                if(data.length === 0) {
-                    container.innerHTML = '<div class="col-span-full text-center text-gray-500">لا توجد أعمال معروضة حالياً.</div>';
-                    return;
-                }
+      // جلب وعرض الأعمال مع معالجة الـ CORS بشكل صحيح
+        fetch(SCRIPT_URL, {
+            method: 'GET',
+            mode: 'cors' // يسمح بجلب البيانات عبر النطاقات
+        })
+        .then(res => {
+            // إذا لم تكن الاستجابة ناجحة (مثل خطأ في الخادم)
+            if (!res.ok) throw new Error('خطأ في استجابة الخادم');
+            return res.json();
+        })
+        .then(data => {
+            globalProjects = data;
+            const container = document.getElementById('dynamic-portfolio');
+            container.innerHTML = '';
+            
+            if(!data || data.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-500 font-bold p-8">لا توجد أعمال معروضة حالياً.</div>';
+                return;
+            }
 
-                data.forEach(p => {
-                    container.innerHTML += `
-                        <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 hover:shadow-2xl transition duration-300">
-                            <div class="h-56 overflow-hidden">
-                                <img src="${p.cover}" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-6">
-                                <h4 class="text-xl font-bold mb-2 text-slate-800">${p.title}</h4>
-                                <p class="text-2xl font-black text-blue-600 mb-6">${p.price} <span class="text-sm font-normal text-gray-500">ر.ع</span></p>
-                                
-                                <div class="flex gap-2">
-                                    <button onclick="openModal('${p.id}')" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 rounded-lg transition text-sm">التفاصيل</button>
-                                    <button onclick="selectService('${p.title}', '${p.price}')" class="w-2/3 bg-slate-900 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition text-sm">طلب الخدمة</button>
-                                </div>
+            data.forEach(p => {
+                container.innerHTML += `
+                    <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 hover:shadow-2xl transition duration-300 transform hover:-translate-y-1">
+                        <div class="h-56 overflow-hidden bg-slate-200">
+                            <!-- إذا لم يتم رفع صورة، تظهر صورة افتراضية -->
+                            <img src="${p.cover ? p.cover : 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop'}" alt="${p.title}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold mb-2 text-slate-800">${p.title}</h4>
+                            <p class="text-2xl font-black text-blue-600 mb-6">${p.price} <span class="text-sm font-normal text-gray-500">ر.ع</span></p>
+                            
+                            <div class="flex gap-2">
+                                <button onclick="openModal('${p.id}')" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 rounded-lg transition text-sm">التفاصيل</button>
+                                <button onclick="selectService('${p.title}', '${p.price}')" class="w-2/3 bg-slate-900 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition text-sm">طلب الخدمة</button>
                             </div>
                         </div>
-                    `;
-                });
-            })
-            .catch(() => document.getElementById('dynamic-portfolio').innerHTML = '<div class="col-span-full text-center text-red-500">حدث خطأ في جلب البيانات.</div>');
-
+                    </div>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            document.getElementById('dynamic-portfolio').innerHTML = '<div class="col-span-full text-center text-red-500 font-bold p-8">حدث خطأ في جلب الأعمال. تأكد من إعدادات Google Apps Script.</div>';
+        });
         // دوال النافذة المنبثقة (التفاصيل)
         function openModal(id) {
             const project = globalProjects.find(p => p.id === id);
