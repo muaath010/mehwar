@@ -51,7 +51,7 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div class="bg-white rounded-2xl p-5 shadow-sm"><p class="text-xs text-gray-500">الأعمال المنشورة</p><p id="st-projects" class="text-3xl font-black text-slate-900">–</p></div>
                 <div class="bg-white rounded-2xl p-5 shadow-sm"><p class="text-xs text-gray-500">طلبات بانتظار المراجعة</p><p id="st-pending" class="text-3xl font-black text-amber-500">–</p></div>
-                <div class="bg-white rounded-2xl p-5 shadow-sm"><p class="text-xs text-gray-500">طلبات مقبولة</p><p id="st-approved" class="text-3xl font-black text-green-600">–</p></div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm"><p class="text-xs text-gray-500">اشتراكات فعّالة</p><p id="st-approved" class="text-3xl font-black text-green-600">–</p></div>
                 <div class="bg-white rounded-2xl p-5 shadow-sm"><p class="text-xs text-gray-500">إجمالي الطلبات</p><p id="st-orders" class="text-3xl font-black text-blue-600">–</p></div>
             </div>
 
@@ -66,7 +66,8 @@
             <section id="tab-orders" class="tab">
                 <div class="flex flex-wrap gap-2 mb-4">
                     <button class="filter-btn bg-slate-900 text-white text-sm font-bold px-4 py-1.5 rounded-full" data-filter="قيد المراجعة">بانتظار المراجعة</button>
-                    <button class="filter-btn bg-white text-slate-700 text-sm font-bold px-4 py-1.5 rounded-full" data-filter="مقبول">المقبولة</button>
+                    <button class="filter-btn bg-white text-slate-700 text-sm font-bold px-4 py-1.5 rounded-full" data-filter="مقبول">الفعّالة</button>
+                    <button class="filter-btn bg-white text-slate-700 text-sm font-bold px-4 py-1.5 rounded-full" data-filter="منتهي">المنتهية</button>
                     <button class="filter-btn bg-white text-slate-700 text-sm font-bold px-4 py-1.5 rounded-full" data-filter="مرفوض">المرفوضة</button>
                     <button class="filter-btn bg-white text-slate-700 text-sm font-bold px-4 py-1.5 rounded-full" data-filter="">الكل</button>
                     <button onclick="loadAll()" class="mr-auto text-sm text-blue-600 font-bold"><i class="fas fa-rotate ml-1"></i> تحديث</button>
@@ -81,11 +82,11 @@
                         <label class="block text-sm font-bold mb-1">عنوان العمل / الخدمة</label>
                         <input type="text" id="p-title" required class="field">
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-1">السعر (ر.ع)</label>
-                        <input type="text" id="p-price" required class="field" placeholder="مثال: 50 أو حسب الاتفاق">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold mb-1">خطط الدفع والأسعار (ر.ع) <span class="text-gray-400 font-normal">— فعّل الخطط التي تريدها واكتب سعر كل خطة</span></label>
+                        <div id="add-plans" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"></div>
                     </div>
-                    <div>
+                    <div class="md:col-span-2">
                         <label class="block text-sm font-bold mb-1">روابط خارجية <span class="text-gray-400 font-normal">(اختياري — تُقفل حتى الدفع)</span></label>
                         <input type="text" id="p-links" class="field" dir="ltr" placeholder="https://... (افصل بمسافة)">
                     </div>
@@ -119,12 +120,70 @@
         </main>
     </div>
 
+    <!-- نافذة تعديل الأسعار -->
+    <div id="plans-modal" class="fixed inset-0 bg-black/60 z-40 hidden flex items-center justify-center p-4">
+        <form id="plans-form" class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-black text-lg">تعديل أسعار: <span id="plans-modal-title"></span></h3>
+                <button type="button" onclick="closePlansModal()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="edit-plans" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5"></div>
+            <p class="text-xs text-gray-500 mb-4">التعديل يطبَّق على الطلبات الجديدة فقط، ولا يغيّر الاشتراكات الحالية.</p>
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl">حفظ الأسعار</button>
+        </form>
+    </div>
+
     <!-- إشعار -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-xl text-sm font-bold hidden z-50"></div>
 
     <script>
         // *** ضع رابط الـ Web App هنا ***
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2guctcoM5yju4QHL-PB3qbvCn1aZqcv1GfiZXMCK7NytgIgAOtLXdRLYk4vXMgP4_kQ/exec';
+
+        // خطط الدفع (يجب أن تطابق PLANS في كود Apps Script)
+        const PLANS = [
+            { key: 'weekly',    label: 'أسبوعي', days: 7 },
+            { key: 'monthly',   label: 'شهري',   days: 30 },
+            { key: 'quarterly', label: 'فصلي',   days: 90 },
+            { key: 'yearly',    label: 'سنوي',   days: 365 },
+            { key: 'lifetime',  label: 'دائم',   days: 0 }
+        ];
+        const planLabel = k => (PLANS.find(p => p.key === k) || { label: k }).label;
+        const fmtDate = iso => iso ? new Date(iso).toLocaleDateString('ar-OM') : '';
+
+        // يرسم مربعات الخطط (تفعيل + سعر) داخل حاوية
+        function renderPlanInputs(containerId, values) {
+            values = values || {};
+            document.getElementById(containerId).innerHTML = PLANS.map(p => {
+                const on = values[p.key] != null && values[p.key] !== '';
+                return `
+                <div class="plan-cell border-2 ${on ? 'border-blue-500 bg-blue-50' : 'border-slate-200'} rounded-xl p-3 transition">
+                    <label class="flex items-center gap-2 font-bold text-sm cursor-pointer mb-2">
+                        <input type="checkbox" data-plan="${p.key}" class="plan-check w-4 h-4 accent-blue-600" ${on ? 'checked' : ''}>
+                        ${p.label}
+                        <span class="text-[11px] text-gray-400 font-normal mr-auto">${p.days ? p.days + ' يوم' : '∞'}</span>
+                    </label>
+                    <input type="text" inputmode="decimal" data-price="${p.key}" value="${on ? esc(values[p.key]) : ''}" ${on ? '' : 'disabled'}
+                        class="field !py-1.5 text-center disabled:opacity-40" placeholder="السعر">
+                </div>`;
+            }).join('');
+            document.querySelectorAll(`#${containerId} .plan-check`).forEach(cb => cb.addEventListener('change', () => {
+                const cell = cb.closest('.plan-cell'), price = cell.querySelector('[data-price]');
+                price.disabled = !cb.checked;
+                cell.classList.toggle('border-blue-500', cb.checked); cell.classList.toggle('bg-blue-50', cb.checked);
+                cell.classList.toggle('border-slate-200', !cb.checked);
+                if (cb.checked) price.focus();
+            }));
+        }
+
+        function readPlanInputs(containerId) {
+            const out = {};
+            document.querySelectorAll(`#${containerId} .plan-check:checked`).forEach(cb => {
+                const v = document.querySelector(`#${containerId} [data-price="${cb.dataset.plan}"]`).value.trim();
+                if (v) out[cb.dataset.plan] = v;
+            });
+            return out;
+        }
 
         let PASS = '';
         let orders = [], projects = [], orderFilter = 'قيد المراجعة';
@@ -218,7 +277,15 @@
             badge.textContent = pending; badge.classList.toggle('hidden', pending === 0);
         }
 
-        const STATUS_CLS = { 'مقبول': 'bg-green-100 text-green-700', 'مرفوض': 'bg-red-100 text-red-700', 'قيد المراجعة': 'bg-amber-100 text-amber-700' };
+        const STATUS_CLS = { 'مقبول': 'bg-green-100 text-green-700', 'منتهي': 'bg-slate-200 text-slate-600', 'مرفوض': 'bg-red-100 text-red-700', 'قيد المراجعة': 'bg-amber-100 text-amber-700' };
+        const STATUS_TXT = { 'مقبول': 'فعّال' };
+
+        function periodText(o) {
+            if (!o.start) return '';
+            if (!o.end) return '<span class="text-green-700">· دائم</span>';
+            const left = Math.ceil((new Date(o.end) - Date.now()) / 86400000);
+            return `· حتى ${fmtDate(o.end)} ${left > 0 ? `<span class="${left <= 3 ? 'text-red-600' : 'text-green-700'} font-bold">(متبقٍ ${left} يوم)</span>` : ''}`;
+        }
 
         function renderOrders() {
             const list = document.getElementById('orders-list');
@@ -229,9 +296,10 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex flex-wrap items-center gap-2 mb-1">
                             <span class="font-bold">${esc(o.clientName)}</span>
-                            <span class="${STATUS_CLS[o.status] || 'bg-gray-100'} text-xs font-bold px-2.5 py-0.5 rounded-full">${esc(o.status)}</span>
+                            <span class="${STATUS_CLS[o.status] || 'bg-gray-100'} text-xs font-bold px-2.5 py-0.5 rounded-full">${esc(STATUS_TXT[o.status] || o.status)}</span>
+                            <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-full"><i class="fas fa-tag ml-1"></i>${esc(planLabel(o.plan))}${o.amount ? ' · ' + esc(o.amount) + ' ر.ع' : ''}</span>
                         </div>
-                        <p class="text-sm text-slate-600 truncate">${esc(o.service)}</p>
+                        <p class="text-sm text-slate-600 truncate">${esc(o.service)} <span class="text-xs text-gray-500">${periodText(o)}</span></p>
                         <p class="text-xs text-gray-400 mt-1">
                             <span class="font-mono" dir="ltr">${esc(o.orderId)}</span> ·
                             ${o.phone ? `<a href="tel:${esc(o.phone)}" class="hover:text-blue-600" dir="ltr">${esc(o.phone)}</a> ·` : ''}
@@ -240,8 +308,8 @@
                     </div>
                     <div class="flex gap-2 shrink-0">
                         ${o.receipt ? `<a href="${esc(o.receipt)}" target="_blank" rel="noopener" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold px-3 py-2 rounded-lg"><i class="fas fa-file-invoice ml-1"></i> الإيصال</a>` : ''}
-                        ${o.status !== 'مقبول' ? `<button onclick="setStatus('${esc(o.orderId)}','approved')" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold px-3 py-2 rounded-lg"><i class="fas fa-check ml-1"></i> قبول وفتح المحتوى</button>` : ''}
-                        ${o.status !== 'مرفوض' ? `<button onclick="setStatus('${esc(o.orderId)}','rejected')" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 text-sm font-bold px-3 py-2 rounded-lg">رفض</button>` : ''}
+                        ${o.status === 'قيد المراجعة' || o.status === 'مرفوض' ? `<button onclick="setStatus('${esc(o.orderId)}','approved')" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold px-3 py-2 rounded-lg"><i class="fas fa-check ml-1"></i> قبول وتفعيل</button>` : ''}
+                        ${o.status === 'قيد المراجعة' ? `<button onclick="setStatus('${esc(o.orderId)}','rejected')" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 text-sm font-bold px-3 py-2 rounded-lg">رفض</button>` : ''}
                     </div>
                 </div>`).join('');
         }
@@ -251,9 +319,7 @@
             try {
                 const r = await api({ action: 'setOrderStatus', orderId, status });
                 toast(r.message);
-                const o = orders.find(x => x.orderId === orderId);
-                if (o) o.status = status === 'approved' ? 'مقبول' : 'مرفوض';
-                renderStats(); renderOrders();
+                loadAll();
             } catch (ex) { toast(ex.message, true); }
         }
 
@@ -268,13 +334,39 @@
                     </div>
                     <div class="p-4 flex-1 flex flex-col">
                         <p class="font-bold">${esc(p.title)}</p>
-                        <p class="text-blue-600 font-black text-sm mb-2">${esc(p.price)} ر.ع</p>
+                        <div class="flex flex-wrap gap-1 my-2">
+                            ${PLANS.filter(pl => p.plans && p.plans[pl.key]).map(pl => `<span class="bg-blue-50 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded">${pl.label}: ${esc(p.plans[pl.key])}</span>`).join('')}
+                        </div>
                         <p class="text-xs text-gray-500 mb-3"><i class="fas fa-lock ml-1"></i> ${p.fileCount} ملف/رابط مقفل ·
-                            ${orders.filter(o => o.projectId === p.id && o.status === 'مقبول').length} مبيعات</p>
-                        <button onclick="deleteProject('${esc(p.id)}')" class="mt-auto bg-white border border-red-200 text-red-600 hover:bg-red-50 text-sm font-bold py-2 rounded-lg"><i class="fas fa-trash ml-1"></i> حذف</button>
+                            ${orders.filter(o => o.projectId === p.id && o.status === 'مقبول').length} اشتراك فعّال</p>
+                        <div class="mt-auto grid grid-cols-2 gap-2">
+                            <button onclick="openPlansModal('${esc(p.id)}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold py-2 rounded-lg"><i class="fas fa-tags ml-1"></i> الأسعار</button>
+                            <button onclick="deleteProject('${esc(p.id)}')" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 text-sm font-bold py-2 rounded-lg"><i class="fas fa-trash ml-1"></i> حذف</button>
+                        </div>
                     </div>
                 </div>`).join('');
         }
+
+        let editingProject = null;
+        function openPlansModal(id) {
+            const p = projects.find(x => x.id === id);
+            if (!p) return;
+            editingProject = id;
+            document.getElementById('plans-modal-title').textContent = p.title;
+            renderPlanInputs('edit-plans', p.plans);
+            document.getElementById('plans-modal').classList.remove('hidden');
+        }
+        function closePlansModal() { document.getElementById('plans-modal').classList.add('hidden'); }
+
+        document.getElementById('plans-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const plans = readPlanInputs('edit-plans');
+            if (!Object.keys(plans).length) { toast('فعّل خطة واحدة على الأقل واكتب سعرها', true); return; }
+            try {
+                await api({ action: 'updatePlans', projectId: editingProject, plans });
+                toast('تم تحديث الأسعار ✓'); closePlansModal(); loadAll();
+            } catch (ex) { toast(ex.message, true); }
+        });
 
         async function deleteProject(id) {
             if (!confirm('تأكيد حذف هذا العمل من المنصة؟')) return;
@@ -303,6 +395,8 @@
 
         document.getElementById('add-project-form').addEventListener('submit', async e => {
             e.preventDefault();
+            const plans = readPlanInputs('add-plans');
+            if (!Object.keys(plans).length) { toast('فعّل خطة دفع واحدة على الأقل واكتب سعرها', true); return; }
             const btn = document.getElementById('add-btn');
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin ml-1"></i> جاري الرفع... قد يستغرق وقتاً للملفات الكبيرة';
             btn.disabled = true;
@@ -313,7 +407,7 @@
                 await api({
                     action: 'addProject',
                     title: document.getElementById('p-title').value,
-                    price: document.getElementById('p-price').value,
+                    plans,
                     description: document.getElementById('p-desc').value,
                     externalLinks: document.getElementById('p-links').value,
                     coverFile: coverInput ? await getBase64(coverInput) : null,
@@ -324,6 +418,7 @@
                 document.getElementById('cover-preview').classList.add('hidden');
                 document.getElementById('cover-hint').classList.remove('hidden');
                 document.getElementById('p-files').dispatchEvent(new Event('change'));
+                renderPlanInputs('add-plans');
                 loadAll();
             } catch (ex) {
                 toast('خطأ: ' + ex.message + ' (للملفات الكبيرة جداً استخدم رابطاً خارجياً)', true);
@@ -331,6 +426,8 @@
             btn.innerHTML = '<i class="fas fa-cloud-arrow-up ml-1"></i> رفع العمل للمنصة';
             btn.disabled = false;
         });
+
+        renderPlanInputs('add-plans');
     </script>
 </body>
 </html>
