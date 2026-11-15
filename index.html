@@ -28,7 +28,7 @@
     </h1>
 </a>
             <nav class="flex gap-4 md:gap-6 font-semibold text-sm md:text-base">
-                <a href="#portfolio" class="hover:text-blue-400 transition hidden md:inline">الأعمال والخدمات</a>
+                <a href="#portfolio" class="hover:text-blue-400 transition hidden md:inline">أعمالي والخدمات</a>
                 <a href="#payment" class="hover:text-blue-400 transition hidden md:inline">تأكيد الدفع</a>
                 <a href="#my-orders" class="hover:text-blue-400 transition"><i class="fas fa-box-open ml-1"></i>طلباتي</a>
             </nav>
@@ -76,8 +76,8 @@
                         <div><p class="text-slate-400 text-sm mb-1">البنك</p><p class="text-xl font-bold text-blue-400">بنك مسقط</p></div>
                         <div><p class="text-slate-400 text-sm mb-1">اسم المستفيد</p><p class="text-lg font-semibold">مِحور للتقنيات الحديثة</p></div>
                         <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                            <p class="text-slate-400 text-sm mb-1">رقم التحويل بالهاتف</p>
-                            <p class="text-2xl font-mono font-black tracking-widest text-white select-all" dir="ltr">96986060</p>
+                            <p class="text-slate-400 text-sm mb-1">رقم الحساب</p>
+                            <p class="text-2xl font-mono font-black tracking-widest text-white select-all" dir="ltr">0000 0000 0000 0000</p>
                         </div>
                     </div>
                     <ol class="mt-8 space-y-2 text-sm text-slate-300 list-decimal pr-5">
@@ -142,6 +142,7 @@
             <div class="p-8">
                 <h3 id="modal-title" class="text-3xl font-black text-slate-800 mb-4 border-b pb-4"></h3>
                 <p id="modal-desc" class="text-gray-600 leading-relaxed mb-6 whitespace-pre-wrap"></p>
+                <div id="modal-video" class="hidden mb-6"></div>
                 <h4 class="font-bold text-slate-800 mb-2"><i class="fas fa-tags ml-1 text-blue-600"></i> خطط الاشتراك</h4>
                 <div id="modal-plans" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6"></div>
                 <div id="modal-lock" class="bg-amber-50 border border-amber-200 p-5 rounded-xl text-center">
@@ -180,6 +181,40 @@
             return PLANS.filter(pl => src[pl.key]).map(pl => ({ ...pl, price: src[pl.key] }));
         };
         const priceText = v => isNaN(parseFloat(v)) ? esc(v) : `${esc(v)} <span class="text-xs font-normal">ر.ع</span>`;
+        // تحويل رابط الفيديو إلى مشغّل داخل الصفحة (يوتيوب، فيميو، Google Drive، mp4)
+        function videoEmbed(url) {
+            url = String(url || '').trim();
+            if (!url) return null;
+            let m;
+            if ((m = url.match(/(?:youtube\.com\/(?:watch\?.*?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{6,})/)))
+                return { type: 'iframe', src: `https://www.youtube-nocookie.com/embed/${m[1]}?rel=0` };
+            if ((m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)))
+                return { type: 'iframe', src: `https://player.vimeo.com/video/${m[1]}` };
+            if (url.includes('drive.google.com') && (m = url.match(/\/d\/([\w-]+)/) || url.match(/[?&]id=([\w-]+)/)))
+                return { type: 'iframe', src: `https://drive.google.com/file/d/${m[1]}/preview` };
+            if (/\.(mp4|webm|ogg)(\?|#|$)/i.test(url)) return { type: 'video', src: url };
+            if (/^https?:\/\//i.test(url)) return { type: 'link', src: url };
+            return null;
+        }
+
+        function renderVideo(url) {
+            const box = document.getElementById('modal-video');
+            const v = videoEmbed(url);
+            if (!v) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+            box.classList.remove('hidden');
+            if (v.type === 'link') {
+                box.innerHTML = `<a href="${esc(v.src)}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl transition"><i class="fas fa-circle-play"></i> مشاهدة الفيديو التعريفي</a>`;
+                return;
+            }
+            box.innerHTML = `
+                <h4 class="font-bold text-slate-800 mb-2"><i class="fas fa-circle-play ml-1 text-red-600"></i> فيديو تعريفي</h4>
+                <div class="relative w-full rounded-xl overflow-hidden bg-black shadow" style="padding-top:56.25%">
+                    ${v.type === 'iframe'
+                        ? `<iframe src="${esc(v.src)}" class="absolute inset-0 w-full h-full" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+                        : `<video src="${esc(v.src)}" class="absolute inset-0 w-full h-full" controls preload="metadata"></video>`}
+                </div>`;
+        }
+
         const fmtDate = iso => iso ? new Date(iso).toLocaleDateString('ar-OM', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
 
         // ===== صور تقنية افتراضية تُستخدم تلقائياً عند عدم رفع غلاف =====
@@ -249,6 +284,9 @@
                 <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 hover:shadow-2xl transition duration-300 transform hover:-translate-y-1 flex flex-col">
                     <div class="h-56 overflow-hidden bg-slate-200 relative">
                         <img src="${esc(coverFor(p))}" data-key="${esc(p.id)}" alt="${esc(p.title)}" referrerpolicy="no-referrer" loading="lazy" onerror="imgFail(this)" class="w-full h-full object-cover">
+                        ${videoEmbed(p.video) ? `
+                        <button onclick="openModal(${idx})" class="absolute top-3 right-3 bg-red-600/95 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow z-10">
+                            <i class="fas fa-play ml-1"></i> فيديو</button>` : ''}
                         <div class="lock-overlay absolute inset-0 flex items-end p-4">
                             <span class="bg-white/90 text-slate-800 text-xs font-bold px-3 py-1 rounded-full shadow">
                                 <i class="fas fa-lock text-amber-500 ml-1"></i>
@@ -287,6 +325,7 @@
             cover.src = coverFor(p);
             document.getElementById('modal-title').innerText = p.title;
             document.getElementById('modal-desc').innerText = p.description;
+            renderVideo(p.video);
             document.getElementById('modal-plans').innerHTML = projectPlans(p).map(pl => `
                 <button onclick="closeModal(); selectService(${idx}, '${pl.key}')" class="border border-slate-200 hover:border-blue-500 hover:bg-blue-50 rounded-xl p-3 text-center transition">
                     <p class="text-xs text-gray-500">${pl.label}</p>
@@ -300,7 +339,12 @@
             document.getElementById('details-modal').classList.remove('hidden');
         }
 
-        function closeModal() { document.getElementById('details-modal').classList.add('hidden'); }
+        function closeModal() {
+            document.getElementById('details-modal').classList.add('hidden');
+            // إيقاف الفيديو عند الإغلاق
+            const box = document.getElementById('modal-video');
+            box.innerHTML = ''; box.classList.add('hidden');
+        }
 
         let selectedPlan = '';
 
