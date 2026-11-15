@@ -4,32 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مِحور للتقنيات الحديثة | أ. معاذ اليعقوبي</title>
-    
-    <!-- مكتبة Tailwind CSS للتصميم -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- خط Cairo العربي -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    
-    <!-- مكتبة AOS للحركات التفاعلية -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
-    
-    <!-- مكتبة FontAwesome للأيقونات -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    
     <style>
-        body { 
-            font-family: 'Cairo', sans-serif; 
-            background-color: #f8fafc; 
-            overflow-x: hidden;
-        }
-        .hero-bg {
-            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
-                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop') center/cover fixed;
-        }
-        .card-hover:hover .card-overlay {
-            opacity: 1;
-        }
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
+        .hero-bg { background: linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop') center/cover fixed; }
     </style>
 </head>
 <body class="text-slate-800 antialiased">
@@ -37,19 +17,11 @@
     <!-- الشريط العلوي -->
     <header class="bg-slate-900 text-white py-4 shadow-lg fixed w-full z-50 top-0 opacity-95">
         <div class="container mx-auto px-6 flex justify-between items-center">
-            <a href="#home" class="flex items-center gap-3 transition transform hover:scale-105">
-    <!-- استبدل logo.png باسم ملف الشعار الخاص بك، وإذا وضعته في مجلد اكتب images/logo.png -->
-    <img src="logo.png" alt="شعار مِحور للتقنيات الحديثة" class="h-10 md:h-12 w-auto object-contain">
-    
-    <!-- سيختفي النص في شاشات الجوال الصغيرة جداً لتوفير مساحة للشعار -->
-    <h1 class="text-xl md:text-2xl font-bold tracking-wider hidden sm:block">
-        مِحور للتقنيات الحديثة
-    </h1>
-</a>
+            <h1 class="text-2xl font-bold tracking-wider">
+                مِحور للتقنيات الحديثة <i class="fas fa-microchip text-blue-400 ml-2"></i>
+            </h1>
             <nav class="hidden md:flex space-x-6 space-x-reverse font-semibold">
-                <a href="#home" class="hover:text-blue-400 transition">الرئيسية</a>
-                <a href="#portfolio" class="hover:text-blue-400 transition">أعمالي</a>
-                <a href="#pricing" class="hover:text-blue-400 transition">الأسعار</a>
+                <a href="#portfolio" class="hover:text-blue-400 transition">أعمالي والخدمات</a>
                 <a href="#payment" class="hover:text-blue-400 transition">تأكيد الدفع</a>
             </nav>
         </div>
@@ -57,320 +29,209 @@
 
     <!-- القسم الترحيبي -->
     <section id="home" class="hero-bg min-h-screen flex items-center justify-center text-center text-white pt-16">
-        <div class="container mx-auto px-6" data-aos="zoom-in" data-aos-duration="1200">
-            <div class="inline-block bg-blue-600 text-sm font-bold px-4 py-1 rounded-full mb-6 shadow-lg">
-                حلول برمجية متكاملة
-            </div>
-            <h2 class="text-4xl md:text-6xl font-black mb-4 leading-tight">بوابتك نحو التحول الرقمي</h2>
-            <p class="text-2xl md:text-3xl mb-8 text-blue-300 font-bold">بإشراف: أ. معاذ اليعقوبي</p>
-            <p class="max-w-2xl mx-auto text-lg mb-10 text-gray-300 leading-relaxed">
-                نقدم أحدث التقنيات في تطوير تطبيقات الويب، إدارة الأنظمة المدرسية، وبرمجة المنصات اللوجستية الذكية بكفاءة واحترافية.
-            </p>
-            <a href="#portfolio" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-10 rounded-full transition transform hover:scale-105 shadow-[0_0_15px_rgba(37,99,235,0.5)]">
-                استكشف الأعمال <i class="fas fa-arrow-down mr-2"></i>
-            </a>
-        </div>
-    </section>
-
-    <!-- قسم معرض الأعمال -->
-    <section id="portfolio" class="py-24 bg-white relative">
         <div class="container mx-auto px-6">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h3 class="text-4xl font-black text-slate-900 mb-2">أبرز الأعمال والمشاريع</h3>
+            <div class="inline-block bg-blue-600 text-sm font-bold px-4 py-1 rounded-full mb-6">حلول برمجية متكاملة</div>
+            <h2 class="text-4xl md:text-6xl font-black mb-4">بوابتك نحو التحول الرقمي</h2>
+            <p class="text-2xl md:text-3xl mb-8 text-blue-300 font-bold">بإشراف: أ. معاذ اليعقوبي</p>
+            <a href="#portfolio" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-10 rounded-full transition transform hover:scale-105">تصفح الخدمات <i class="fas fa-arrow-down mr-2"></i></a>
+        </div>
+    </section>
+
+    <!-- معرض الأعمال (ديناميكي) -->
+    <section id="portfolio" class="py-24 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-4xl font-black text-slate-900 mb-2">الأعمال والخدمات المتاحة</h3>
                 <div class="w-24 h-1 bg-blue-600 mx-auto rounded"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                <!-- بطاقة العمل 1 -->
-                <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 card-hover group" data-aos="fade-up" data-aos-delay="100">
-                    <div class="relative overflow-hidden h-56">
-                        <img src="https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=2006&auto=format&fit=crop" alt="Na'awen Delivery" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                    </div>
-                    <div class="p-6">
-                        <h4 class="text-xl font-bold mb-3 text-slate-800">منصة فريق نعاون لخدمات التوصيل</h4>
-                        <p class="text-gray-600 mb-6 text-sm leading-relaxed line-clamp-3">
-                            نظام متكامل لإدارة الخدمات اللوجستية وتتبع الشحنات، مزود بربط مباشر مع WhatsApp API لإرسال إشعارات تلقائية للسائقين والإدارة لحظة بلحظة.
-                        </p>
-                        <div class="flex flex-wrap gap-2 justify-between items-center border-t border-slate-200 pt-4">
-                            <a href="#" class="text-slate-700 hover:text-blue-600 text-sm font-bold transition"><i class="fas fa-info-circle ml-1"></i> التفاصيل</a>
-                            <a href="#" class="text-red-600 hover:text-red-700 text-sm font-bold transition"><i class="fab fa-youtube ml-1"></i> فيديو شرح</a>
-                            <a href="#" class="bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-600 transition shadow"><i class="fas fa-download ml-1"></i> تحميل</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- بطاقة العمل 2 -->
-                <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 card-hover group" data-aos="fade-up" data-aos-delay="200">
-                    <div class="relative overflow-hidden h-56">
-                        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop" alt="EduPoints System" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                    </div>
-                    <div class="p-6">
-                        <h4 class="text-xl font-bold mb-3 text-slate-800">تطبيق EduPoints التعليمي</h4>
-                        <p class="text-gray-600 mb-6 text-sm leading-relaxed line-clamp-3">
-                            تطبيق ويب مصمم لإدارة التقييمات المدرسية، مبني باستخدام HTML و JS ومربوط برمجياً مع Google Apps Script لتخزين البيانات بشكل سحابي ومباشر.
-                        </p>
-                        <div class="flex flex-wrap gap-2 justify-between items-center border-t border-slate-200 pt-4">
-                            <a href="#" class="text-slate-700 hover:text-blue-600 text-sm font-bold transition"><i class="fas fa-info-circle ml-1"></i> التفاصيل</a>
-                            <a href="#" class="text-red-600 hover:text-red-700 text-sm font-bold transition"><i class="fab fa-youtube ml-1"></i> فيديو شرح</a>
-                            <a href="#" class="bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-600 transition shadow"><i class="fas fa-download ml-1"></i> تحميل</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- بطاقة العمل 3 -->
-                <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 card-hover group" data-aos="fade-up" data-aos-delay="300">
-                    <div class="relative overflow-hidden h-56">
-                        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop" alt="Cyber Security" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                    </div>
-                    <div class="p-6">
-                        <h4 class="text-xl font-bold mb-3 text-slate-800">بوابة التوعية السيبرانية المدرسية</h4>
-                        <p class="text-gray-600 mb-6 text-sm leading-relaxed line-clamp-3">
-                            منصة تفاعلية تحتوي على تحديات الاختراق الأخلاقي (CTF) وألعاب تعليمية لتعزيز الوعي الرقمي لدى الطلاب بطرق عصرية وممتعة.
-                        </p>
-                        <div class="flex flex-wrap gap-2 justify-between items-center border-t border-slate-200 pt-4">
-                            <a href="#" class="text-slate-700 hover:text-blue-600 text-sm font-bold transition"><i class="fas fa-info-circle ml-1"></i> التفاصيل</a>
-                            <a href="#" class="text-red-600 hover:text-red-700 text-sm font-bold transition"><i class="fab fa-youtube ml-1"></i> فيديو شرح</a>
-                            <a href="#" class="bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-600 transition shadow"><i class="fas fa-download ml-1"></i> تحميل</a>
-                        </div>
-                    </div>
-                </div>
+            <!-- سيتم حقن الأعمال هنا بواسطة الجافاسكريبت -->
+            <div id="dynamic-portfolio" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div class="col-span-full text-center text-gray-500"><i class="fas fa-circle-notch fa-spin text-2xl mb-2"></i><br>جاري تحميل الأعمال...</div>
             </div>
         </div>
     </section>
 
-    <!-- قسم الأسعار -->
-    <section id="pricing" class="py-24 bg-slate-900 text-white relative">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform translate-x-1/2 -translate-y-1/2"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform -translate-x-1/2 translate-y-1/2"></div>
-        
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h3 class="text-4xl font-black mb-2">باقات الحلول التقنية</h3>
-                <div class="w-24 h-1 bg-blue-500 mx-auto rounded"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto text-center items-center">
-                <!-- الباقة الأساسية -->
-                <div class="bg-slate-800 rounded-3xl p-8 border border-slate-700" data-aos="zoom-in-up" data-aos-delay="100">
-                    <h4 class="text-2xl font-bold mb-2">الواجهة الرقمية</h4>
-                    <p class="text-slate-400 text-sm mb-6">مناسبة للملفات الشخصية البسيطة</p>
-                    <p class="text-5xl font-black text-blue-400 mb-6">50 <span class="text-xl text-slate-500 font-normal">ر.ع</span></p>
-                    <ul class="space-y-4 mb-8 text-right text-sm">
-                        <li><i class="fas fa-check-circle text-blue-500 ml-2"></i> تصميم صفحة واحدة متجاوبة</li>
-                        <li><i class="fas fa-check-circle text-blue-500 ml-2"></i> رفع على استضافة مجانية</li>
-                        <li><i class="fas fa-check-circle text-blue-500 ml-2"></i> إضافة حركات بصرية احترافية</li>
-                    </ul>
-                    <a href="#payment" class="block w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition">اختيار الباقة</a>
-                </div>
-
-                <!-- الباقة الاحترافية -->
-                <div class="bg-gradient-to-b from-blue-700 to-blue-900 rounded-3xl p-10 shadow-2xl transform md:-translate-y-4 relative border border-blue-500" data-aos="zoom-in-up" data-aos-delay="200">
-                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-400 text-slate-900 text-xs font-black px-4 py-1 rounded-full uppercase tracking-wider">
-                        الأكثر طلباً
-                    </div>
-                    <h4 class="text-2xl font-bold mb-2">النظام المتكامل</h4>
-                    <p class="text-blue-200 text-sm mb-6">إدارة البيانات ورفع الملفات</p>
-                    <p class="text-5xl font-black text-white mb-6">150 <span class="text-xl text-blue-300 font-normal">ر.ع</span></p>
-                    <ul class="space-y-4 mb-8 text-right text-sm">
-                        <li><i class="fas fa-check-circle text-yellow-400 ml-2"></i> واجهة مستخدم تفاعلية شاملة</li>
-                        <li><i class="fas fa-check-circle text-yellow-400 ml-2"></i> ربط مع Google Sheets كقاعدة بيانات</li>
-                        <li><i class="fas fa-check-circle text-yellow-400 ml-2"></i> نظام رفع وإدارة الملفات المرفقة</li>
-                        <li><i class="fas fa-check-circle text-yellow-400 ml-2"></i> دعم فني ممتد</li>
-                    </ul>
-                    <a href="#payment" class="block w-full bg-white text-blue-900 hover:bg-slate-100 font-black py-3 rounded-xl transition shadow-lg">اختيار الباقة</a>
-                </div>
-
-                <!-- باقة الأعمال -->
-                <div class="bg-slate-800 rounded-3xl p-8 border border-slate-700" data-aos="zoom-in-up" data-aos-delay="300">
-                    <h4 class="text-2xl font-bold mb-2">أنظمة المؤسسات</h4>
-                    <p class="text-slate-400 text-sm mb-6">للتطبيقات اللوجستية والإدارية المعقدة</p>
-                    <p class="text-3xl font-black text-blue-400 mb-6 mt-4">تسعيرة خاصة</p>
-                    <ul class="space-y-4 mb-8 text-right text-sm mt-8">
-                        <li><i class="fas fa-check-circle text-blue-500 ml-2"></i> ربط مع WhatsApp API</li>
-                        <li><i class="fas fa-check-circle text-blue-500 ml-2"></i> استضافة سحابية وقاعدة بيانات مخصصة</li>
-                        <li><i class="fas fa-check-circle text-blue-500 ml-2"></i> لوحة تحكم إدارية متقدمة</li>
-                    </ul>
-                    <a href="#payment" class="block w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition">تواصل معنا</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- قسم تأكيد الدفع ورفع الإيصال -->
-    <section id="payment" class="py-24 bg-slate-50">
+    <!-- قسم تأكيد الدفع -->
+    <section id="payment" class="py-24 bg-slate-50 border-t">
         <div class="container mx-auto px-6 max-w-5xl">
-            <div class="text-center mb-16" data-aos="fade-up">
+            <div class="text-center mb-16">
                 <h3 class="text-4xl font-black text-slate-900 mb-2">تأكيد الطلب والدفع</h3>
-                <div class="w-24 h-1 bg-blue-600 mx-auto rounded"></div>
+                <p class="text-gray-500">اختر الخدمة من قسم الأعمال بالأعلى ليتم تحديدها تلقائياً هنا</p>
             </div>
 
-            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row" data-aos="fade-up">
-                <!-- تفاصيل الحساب البنكي -->
-                <div class="lg:w-2/5 bg-blue-700 text-white p-10 flex flex-col justify-center relative overflow-hidden">
-                    <i class="fas fa-university absolute -bottom-10 -right-10 text-9xl text-blue-800 opacity-50 transform -rotate-12"></i>
-                    <div class="relative z-10">
-                        <h4 class="text-2xl font-bold mb-8">معلومات التحويل البنكي</h4>
-                        <div class="space-y-6">
-                            <div>
-                                <p class="text-blue-200 text-sm mb-1">البنك المعتمد</p>
-                                <p class="text-xl font-bold"><i class="fas fa-building mr-2 text-yellow-400"></i> بنك مسقط</p>
-                            </div>
-                            <div>
-                                <p class="text-blue-200 text-sm mb-1">اسم المستفيد</p>
-                                <p class="text-lg font-semibold">مِحور للتقنيات الحديثة</p>
-                            </div>
-                            <div class="bg-blue-800 p-4 rounded-xl border border-blue-600 mt-4">
-                                <p class="text-blue-200 text-sm mb-1">رقم الحساب</p>
-                                <p class="text-2xl font-mono font-black tracking-widest select-all" dir="ltr">0000 0000 0000 0000</p>
-                            </div>
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row">
+                <!-- تفاصيل البنك -->
+                <div class="lg:w-2/5 bg-slate-900 text-white p-10 flex flex-col justify-center">
+                    <h4 class="text-2xl font-bold mb-8">معلومات التحويل البنكي</h4>
+                    <div class="space-y-6">
+                        <div><p class="text-slate-400 text-sm mb-1">البنك</p><p class="text-xl font-bold text-blue-400">بنك مسقط</p></div>
+                        <div><p class="text-slate-400 text-sm mb-1">اسم المستفيد</p><p class="text-lg font-semibold">مِحور للتقنيات الحديثة</p></div>
+                        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                            <p class="text-slate-400 text-sm mb-1">رقم الحساب</p>
+                            <p class="text-2xl font-mono font-black tracking-widest text-white select-all" dir="ltr">0000 0000 0000 0000</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- نموذج الرفع -->
+                <!-- نموذج الطلب -->
                 <div class="lg:w-3/5 p-10">
                     <form id="transfer-form" class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="client-name" class="block text-sm font-bold text-slate-700 mb-2">اسم العميل / الجهة</label>
-                                <div class="relative">
-                                    <i class="fas fa-user absolute right-4 top-3.5 text-slate-400"></i>
-                                    <input type="text" id="client-name" required placeholder="أدخل الاسم الثلاثي" class="w-full pr-10 pl-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 transition">
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label for="service-type" class="block text-sm font-bold text-slate-700 mb-2">الباقة المطلوبة</label>
-                                <div class="relative">
-                                    <i class="fas fa-box absolute right-4 top-3.5 text-slate-400"></i>
-                                    <select id="service-type" required class="w-full pr-10 pl-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 transition appearance-none cursor-pointer">
-                                        <option value="">-- اختر من القائمة --</option>
-                                        <option value="الواجهة الرقمية (50 ر.ع)">الواجهة الرقمية (50 ر.ع)</option>
-                                        <option value="النظام المتكامل (150 ر.ع)">النظام المتكامل (150 ر.ع)</option>
-                                        <option value="أنظمة المؤسسات">أنظمة المؤسسات (تسعيرة خاصة)</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">الخدمة المطلوبة وإجمالي السعر</label>
+                            <input type="text" id="service-type" readonly required class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-100 font-bold text-blue-700 cursor-not-allowed" placeholder="الرجاء اختيار 'طلب الخدمة' من قسم الأعمال">
                         </div>
-
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">اسم العميل / الجهة</label>
+                            <input type="text" id="client-name" required placeholder="أدخل الاسم الثلاثي" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 bg-slate-50">
+                        </div>
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2">إيصال الدفع</label>
-                            <div class="border-2 border-dashed border-blue-300 rounded-xl p-6 text-center hover:bg-blue-50 transition cursor-pointer relative">
-                                <input type="file" id="receipt-file" accept="image/*,.pdf" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                                <i class="fas fa-cloud-upload-alt text-4xl text-blue-500 mb-3"></i>
-                                <p class="text-sm text-slate-600 font-bold mb-1">اضغط هنا لاختيار صورة الإيصال أو ملف PDF</p>
-                                <p class="text-xs text-slate-400">أو قم بسحب وإفلات الملف هنا</p>
-                                <p id="file-name-display" class="mt-3 text-sm text-green-600 font-bold hidden"></p>
-                            </div>
+                            <input type="file" id="receipt-file" accept="image/*,.pdf" required class="w-full p-3 border border-slate-200 rounded-xl bg-slate-50">
                         </div>
-
-                        <button type="submit" id="submit-btn" class="w-full bg-slate-900 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition duration-300 flex justify-center items-center text-lg mt-4">
-                            <span>إرسال الطلب واعتماد الإيصال</span>
-                            <i class="fas fa-paper-plane mr-3"></i>
-                        </button>
+                        <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition">إرسال الطلب واعتماد الإيصال</button>
                     </form>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- تذييل الموقع -->
-    <footer class="bg-slate-950 text-slate-400 py-10 border-t border-slate-800 text-center">
-        <div class="container mx-auto px-6">
-            <h2 class="text-xl font-bold text-white mb-2">مِحور للتقنيات الحديثة <i class="fas fa-microchip text-blue-500 text-sm"></i></h2>
-            <p class="mb-4 text-sm">نحو مستقبل رقمي ذكي ومستدام</p>
-            <div class="flex justify-center space-x-4 space-x-reverse mb-6">
-                <a href="#" class="text-slate-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
-                <a href="#" class="text-slate-400 hover:text-white transition"><i class="fab fa-instagram text-xl"></i></a>
-                <a href="#" class="text-slate-400 hover:text-white transition"><i class="fab fa-linkedin text-xl"></i></a>
-                <a href="#" class="text-slate-400 hover:text-white transition"><i class="fab fa-github text-xl"></i></a>
+    <!-- نافذة التفاصيل (Modal) -->
+    <div id="details-modal" class="fixed inset-0 bg-black bg-opacity-70 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal()" class="absolute top-4 left-4 text-gray-400 hover:text-red-500 text-2xl"><i class="fas fa-times"></i></button>
+            <h3 id="modal-title" class="text-3xl font-black text-slate-800 mb-4 border-b pb-4"></h3>
+            <p id="modal-desc" class="text-gray-600 leading-relaxed mb-6 whitespace-pre-wrap"></p>
+            <div id="modal-files" class="bg-blue-50 p-4 rounded-lg hidden">
+                <h4 class="font-bold text-blue-800 mb-2"><i class="fas fa-paperclip mr-2"></i> المرفقات والروابط:</h4>
+                <div id="modal-links" class="flex flex-col gap-2 text-sm"></div>
             </div>
-            <p class="text-xs border-t border-slate-800 pt-6">جميع الحقوق محفوظة &copy; 2026 | تصميم وتطوير: أ. معاذ اليعقوبي</p>
         </div>
+    </div>
+
+    <!-- تذييل -->
+    <footer class="bg-slate-950 text-slate-400 py-6 text-center text-sm">
+        <p>جميع الحقوق محفوظة &copy; 2026 | تصميم وتطوير: أ. معاذ اليعقوبي - مِحور للتقنيات الحديثة</p>
     </footer>
 
-    <!-- سكربتات التشغيل -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
-        // تفعيل حركات الانيميشن
-        AOS.init({ 
-            once: true,
-            offset: 50,
-            duration: 800
-        });
+        // *** ضع رابط الـ Web App هنا ***
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZ4zB5Tb88NlJJ42iOO0BpkMGLv7PM7a8YzoE4Zxe2dCRtPuj5kj5JQoqC-jtn4L7wtA/exec';
+        
+        let globalProjects = [];
 
-        // إظهار اسم الملف عند اختياره في حقل الرفع
-        document.getElementById('receipt-file').addEventListener('change', function(e) {
-            const fileNameDisplay = document.getElementById('file-name-display');
-            if(this.files && this.files[0]) {
-                fileNameDisplay.textContent = 'تم اختيار الملف: ' + this.files[0].name;
-                fileNameDisplay.classList.remove('hidden');
-            } else {
-                fileNameDisplay.classList.add('hidden');
-            }
-        });
-
-        // كود معالجة وإرسال النموذج إلى Google Sheets
-        const form = document.getElementById('transfer-form');
-        const submitBtn = document.getElementById('submit-btn');
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const originalBtnHtml = submitBtn.innerHTML;
-            submitBtn.innerHTML = 'جاري معالجة الإرسال... <i class="fas fa-circle-notch fa-spin mr-3"></i>';
-            submitBtn.disabled = true;
-            submitBtn.classList.add('opacity-75');
-
-            const fileInput = document.getElementById('receipt-file');
-            const file = fileInput.files[0];
-            const clientName = document.getElementById('client-name').value;
-            const serviceType = document.getElementById('service-type').value;
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const base64String = event.target.result.split(',')[1];
-                    const payload = {
-                        clientName: clientName,
-                        serviceType: serviceType,
-                        fileName: file.name,
-                        mimeType: file.type,
-                        fileBase64: base64String
-                    };
-
-                    // رابط Google Apps Script الخاص بك
-                    const scriptURL = 'https://script.google.com/macros/s/AKfycbwRuUN19R0ZlGFxvrsDb9BfChKh-gO3BhdMVjDQPwNT6p2JyDMc1I0a_wZOLMkUcETbWQ/exec'; 
-
-                    // إرسال البيانات عبر API
-                    fetch(scriptURL, {
-                        method: 'POST',
-                        body: JSON.stringify(payload)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if(data.result === 'success') {
-                            alert("تم استلام طلبك وإيصال التحويل بنجاح. سنتواصل معك قريباً!");
-                            form.reset();
-                            document.getElementById('file-name-display').classList.add('hidden');
-                        } else {
-                            alert("حدث خطأ في النظام: " + data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error!', error.message);
-                        alert("تعذر الاتصال بالخادم، يرجى المحاولة لاحقاً.");
-                    })
-                    .finally(() => {
-                        submitBtn.innerHTML = originalBtnHtml;
-                        submitBtn.disabled = false;
-                        submitBtn.classList.remove('opacity-75');
-                    });
-                };
+        // جلب وعرض الأعمال
+        fetch(SCRIPT_URL)
+            .then(res => res.json())
+            .then(data => {
+                globalProjects = data;
+                const container = document.getElementById('dynamic-portfolio');
+                container.innerHTML = '';
                 
-                // بدء قراءة الملف وتحويله لـ Data URL
-                reader.readAsDataURL(file);
+                if(data.length === 0) {
+                    container.innerHTML = '<div class="col-span-full text-center text-gray-500">لا توجد أعمال معروضة حالياً.</div>';
+                    return;
+                }
+
+                data.forEach(p => {
+                    container.innerHTML += `
+                        <div class="bg-slate-50 rounded-2xl shadow-lg overflow-hidden border border-slate-100 hover:shadow-2xl transition duration-300">
+                            <div class="h-56 overflow-hidden">
+                                <img src="${p.cover}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-6">
+                                <h4 class="text-xl font-bold mb-2 text-slate-800">${p.title}</h4>
+                                <p class="text-2xl font-black text-blue-600 mb-6">${p.price} <span class="text-sm font-normal text-gray-500">ر.ع</span></p>
+                                
+                                <div class="flex gap-2">
+                                    <button onclick="openModal('${p.id}')" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 rounded-lg transition text-sm">التفاصيل</button>
+                                    <button onclick="selectService('${p.title}', '${p.price}')" class="w-2/3 bg-slate-900 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition text-sm">طلب الخدمة</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(() => document.getElementById('dynamic-portfolio').innerHTML = '<div class="col-span-full text-center text-red-500">حدث خطأ في جلب البيانات.</div>');
+
+        // دوال النافذة المنبثقة (التفاصيل)
+        function openModal(id) {
+            const project = globalProjects.find(p => p.id === id);
+            if(!project) return;
+            
+            document.getElementById('modal-title').innerText = project.title;
+            document.getElementById('modal-desc').innerText = project.description;
+            
+            const linksContainer = document.getElementById('modal-links');
+            const filesDiv = document.getElementById('modal-files');
+            linksContainer.innerHTML = '';
+            
+            if(project.files && project.files.trim() !== "") {
+                filesDiv.classList.remove('hidden');
+                const links = project.files.split(' | ');
+                links.forEach((link, idx) => {
+                    if(link.trim() !== "") {
+                        linksContainer.innerHTML += `<a href="${link.trim()}" target="_blank" class="text-blue-600 hover:underline"><i class="fas fa-external-link-alt ml-1"></i> رابط المرفق ${idx + 1}</a>`;
+                    }
+                });
+            } else {
+                filesDiv.classList.add('hidden');
             }
+            
+            document.getElementById('details-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('details-modal').classList.add('hidden');
+        }
+
+        // اختيار خدمة للانتقال للدفع
+        function selectService(title, price) {
+            const input = document.getElementById('service-type');
+            input.value = `${title} ( السعر: ${price} ر.ع )`;
+            input.classList.remove('bg-slate-100', 'text-blue-700');
+            input.classList.add('bg-blue-50', 'text-green-700', 'border-green-500');
+            window.location.href = "#payment";
+        }
+
+        // كود الإرسال للطلب (نفس المنطق السابق مع تعديل الـ payload)
+        const getBase64 = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = () => resolve({ name: file.name, mimeType: file.type, base64: reader.result.split(',')[1] });
+            reader.onerror = error => reject(error);
+        });
+
+        document.getElementById('transfer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const serviceVal = document.getElementById('service-type').value;
+            if(!serviceVal) { alert('الرجاء اختيار الخدمة من قسم الأعمال أولاً.'); window.location.href="#portfolio"; return; }
+
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = 'جاري الإرسال...';
+            btn.disabled = true;
+
+            try {
+                const fileObj = await getBase64(document.getElementById('receipt-file').files[0]);
+                const payload = {
+                    action: "submitOrder",
+                    clientName: document.getElementById('client-name').value,
+                    serviceType: serviceVal,
+                    receiptFile: fileObj
+                };
+
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await response.json();
+                
+                if(result.result === 'success') {
+                    alert("تم إرسال طلبك بنجاح!");
+                    e.target.reset();
+                    document.getElementById('service-type').value = "";
+                } else alert("خطأ: " + result.message);
+            } catch(err) {
+                alert("حدث خطأ في الاتصال بالخادم.");
+            }
+            btn.innerText = 'إرسال الطلب واعتماد الإيصال';
+            btn.disabled = false;
         });
     </script>
 </body>
